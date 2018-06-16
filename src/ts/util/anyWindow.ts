@@ -1,0 +1,1 @@
+export const anyWindow: any = window;

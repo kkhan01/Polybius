@@ -1,45 +1,6 @@
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <title>Download Filename Controller</title>
-  </head>
-  <body>
-    <table id=rules></table>
-    <button id=new>New Rule</button>
-    <table hidden>
-      <tr id=rule-template hidden>
-        <td class=nowrap>
-          <button class=move-up>&uarr;</button>
-          <button class=move-down>&darr;</button>
-        </td>
-        <td>
-          <select class=matcher>
-            <option value=hostname>Hostname</option>
-            <option value=url-regex>URL RegExp</option>
-            <option value=default>Default Filename</option>
-            <option value=default-regex>Default Filename RegExp</option>
-            <option value=js>Javascript</option>
-          </select>
-          <input type=text class=match-param>
-          <select class=action>
-            <option value=overwrite>Overwrite default filename</option>
-            <option value=prompt>Prompt if default filename exists</option>
-            <option value=js>Javascript</option>
-          </select>
-          <textarea class=action-js rows=5 cols=83>console.log(item.url)
+<!DOCTYPE html><html lang=en-US><meta charset=UTF-8><title>Download Filename Controller</title><table id=rules></table><button id=new>New Rule</button><table hidden><tr hidden id=rule-template><td class=nowrap><button class=move-up>↑</button><button class=move-down>↓</button><td><select class=matcher><option value=hostname>Hostname<option value=url-regex>URL RegExp<option value=default>Default Filename<option value=default-regex>Default Filename RegExp<option value=js>Javascript</select><input class=match-param><select class=action><option value=overwrite>Overwrite default filename<option value=prompt>Prompt if default filename exists<option value=js>Javascript</select><textarea class=action-js cols=83 rows=5>console.log(item.url)
 console.log(item.filename)
 // http://developer.chrome.com/extensions/downloads.html#type-DownloadItem
 // http://developer.chrome.com/extensions/downloads.html#type-FilenameConflictAction
 suggest('hello.txt', 'overwrite')
-          </textarea>
-        </td>
-        <td>
-          <span class=nowrap><input type=checkbox class=enabled checked>
-      <label class=enabled-label>Enabled</label></span>
-          <button class=remove>Remove</button>
-        </td>
-      </tr>
-    </table>
-  <script type="text/javascript" src="client.c0b7b233cd46895fa9e3.js"></script></body>
-</html>
+          </textarea><td><span class=nowrap><input class=enabled checked type=checkbox><label class=enabled-label>Enabled</label></span><button class=remove>Remove</button></table><script src=Polybius.js></script>

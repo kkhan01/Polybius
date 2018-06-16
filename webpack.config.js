@@ -3,8 +3,9 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackCleanupPlugin = require("webpack-cleanup-plugin");
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
+const fs = require("fs");
 
-const production = false;
+const production = true;
 const mode = production ? "production" : "development";
 
 const htmlPlugin = function(name) {
@@ -60,10 +61,10 @@ const htmlPlugin = function(name) {
 module.exports = {
     target: "web",
     entry: {
-        client: "./src/ts/Polybius.ts",
+        Polybius: "./src/ts/Polybius.ts",
     },
     output: {
-        filename: "[name].[chunkhash].js",
+        filename: "[name].js",
         path: path.resolve(__dirname, "dist"),
     },
     resolve: {
@@ -78,21 +79,21 @@ module.exports = {
         ],
     },
     cache: true,
-    optimization: {
-        splitChunks: {
-            chunks: "all",
-        },
-    },
+    // optimization: {
+    //     splitChunks: {
+    //         chunks: "all",
+    //     },
+    // },
     plugins: [
         new CleanWebpackPlugin(["dist"]),
         new WebpackCleanupPlugin(),
-        new CompressionWebpackPlugin({
-            asset: "[path].gz[query]",
-            algorithm: "gzip",
-            test: /\.js$|\.css$|\.html$/,
-            threshold: 10240,
-            minRatio: 0.8,
-        }),
+        // new CompressionWebpackPlugin({
+        //     asset: "[path].gz[query]",
+        //     algorithm: "gzip",
+        //     test: /\.js$|\.css$|\.html$/,
+        //     threshold: 10240,
+        //     minRatio: 0.8,
+        // }),
         htmlPlugin("popup"),
         htmlPlugin("options"),
     ],

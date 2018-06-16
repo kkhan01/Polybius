@@ -184,6 +184,11 @@ Object.defineImmutableProperties(Number, {
         return Math.round(n) + "px";
     },
 });
+Object.defineImmutableProperties(RegExp.prototype, {
+    boundTest() {
+        return s => this.test(s);
+    }
+});
 Object.defineImmutableProperties(Node.prototype, {
     appendBefore(node) {
         const { parentNode } = this;

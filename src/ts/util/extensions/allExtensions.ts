@@ -229,6 +229,14 @@ Object.defineImmutableProperties(Number, {
     
 });
 
+Object.defineImmutableProperties(RegExp.prototype, {
+    
+    boundTest(this: RegExp): (s: string) => boolean {
+        return s => this.test(s);
+    }
+    
+});
+
 Object.defineImmutableProperties(Node.prototype, {
     
     appendBefore(this: Node, node: Node): Node {

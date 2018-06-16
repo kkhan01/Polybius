@@ -97,6 +97,12 @@ declare interface NumberConstructor {
     
 }
 
+declare interface RegExp {
+    
+    boundTest(): (s: string) => boolean;
+    
+}
+
 declare interface Node {
     
     appendBefore(node: Node): Node;

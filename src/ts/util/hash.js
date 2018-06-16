@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = require("crypto");
-const utils_1 = require("../../share/util/utils");
+const utils_1 = require("./utils");
 const webCrypto = window.crypto.subtle;
 exports.hasCrypto = !!webCrypto;
 if (!exports.hasCrypto) {

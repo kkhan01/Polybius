@@ -1,5 +1,6 @@
 import {createHash} from "crypto";
-import {isArrayBuffer, isDataView, isString} from "../../share/util/utils";
+import {isArrayBuffer, isDataView, isString} from "./utils";
+
 
 export type TypedArray =
     Int8Array

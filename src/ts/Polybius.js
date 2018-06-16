@@ -23,7 +23,8 @@ function matches(rule, item) {
     }
     return false;
 }
-chrome_promise_1.default.downloads.onDeterminingFilename.addListener(function (item, __suggest) {
+console.log(chrome_promise_1.default);
+chrome.downloads.onDeterminingFilename.addListener(function (item, __suggest) {
     function suggest(filename, conflictAction) {
         __suggest({
             filename: filename,

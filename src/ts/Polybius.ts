@@ -1,4 +1,4 @@
-import chrome from "chrome-promise";
+import chromep from "chrome-promise";
 import DownloadItem = chrome.downloads.DownloadItem;
 
 
@@ -27,6 +27,8 @@ function matches(rule: Rule, item: DownloadItem) {
     }
     return false;
 }
+
+console.log(chromep);
 
 chrome.downloads.onDeterminingFilename.addListener(function(item, __suggest) {
     function suggest(filename: string, conflictAction: string) {

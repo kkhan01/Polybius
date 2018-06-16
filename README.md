@@ -1,3 +1,3 @@
 # Polybius
-## by Smatter Baby
+## by Smatter BABY
 A Chrome extension for download filtering

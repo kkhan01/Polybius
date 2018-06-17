@@ -113,13 +113,13 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
         // }
         // alertObj(actions);
         suggest({filename: downloadItem.filename, conflictAction: "prompt"});
-    }
-    if (actions.length === 1) {
+    } else if (actions.length === 1) {
         // console.log("actions", actions);
         // console.log("selecting", actions[0]);
         select(actions[0]);
+    } else {
+        select(actions[0]);
     }
-    select(actions[0]);
     return;
     // renderPrompt(actions, select);
 });

@@ -1,8 +1,9 @@
 import {cache} from "../util/cache";
-import {DownloadRouter, RouterOptions} from "./DownloadRouter";
+import {DownloadRouter, Path, RouterOptions} from "./DownloadRouter";
 
 export const getRouterOptions = cache(() =>
-    JSON.parse(localStorage.routerOptions || setRouterOptions([])) as RouterOptions[]
+    (JSON.parse(localStorage.routerOptions || setRouterOptions([])) as RouterOptions[])
+        .map(({type, enabled, test, route}) => ({type, enabled, test, route: Path.of(route.path)}))
 );
 
 export const getRouters = cache(() => {

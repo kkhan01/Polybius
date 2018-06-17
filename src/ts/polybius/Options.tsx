@@ -3,7 +3,7 @@ import {Component, ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
 import {anyWindow} from "../util/anyWindow";
 import {createNotNullRef, NotNullRef} from "../util/refs/NotNullRef";
-import {DownloadRouter, DownloadRouterType, RouterOptions, Routers} from "./DownloadRouter";
+import {DownloadRouterType, RouterOptions, Routers} from "./DownloadRouter";
 import {getRouterOptions} from "./serialize";
 
 const RouterTypesDropdown: SFC<{current: DownloadRouterType}> = ({current}) => {
@@ -16,23 +16,26 @@ const RouterTypesDropdown: SFC<{current: DownloadRouterType}> = ({current}) => {
             Dropdown
         </button>
         <div id="myDropdown" className="dropdown-content" ref={ref}>
-            {Routers.map(({type, displayName}) =>
-                <option key={type} value={displayName} selected={current === type}/>)
-            }
+            <select>
+                {Routers.map(({type, displayName}) =>
+                    <option key={type} value={displayName} selected={current === type}/>)
+                }
+            </select>
         </div>
     </div>;
 };
 
 
 const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
-    const {displayName} = DownloadRouter[type];
+    console.log(route);
+    
     return <table>
         <thead>
             <tr>
-                <th>{displayName}</th>
-                <th>{test}</th>
-                <th>{route.toString()}</th>
-                <th>{enabled}</th>
+                <th>Type</th>
+                <th>Test</th>
+                <th>Destination Directory</th>
+                <th>Enabled</th>
             </tr>
         </thead>
         
@@ -78,6 +81,7 @@ class Options extends Component<{}, OptionsState> {
     
     public constructor(props: {}) {
         super(props);
+        console.log(this.options);
     }
     
     public render(): ReactNode {

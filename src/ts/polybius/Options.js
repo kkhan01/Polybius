@@ -11,17 +11,18 @@ const RouterTypesDropdown = ({ current }) => {
     const ref = NotNullRef_1.createNotNullRef();
     return React.createElement("div", { className: "dropdown" },
         React.createElement("button", { onClick: () => ref.current.classList.toggle("show"), className: "dropbtn" }, "Dropdown"),
-        React.createElement("div", { id: "myDropdown", className: "dropdown-content", ref: ref }, DownloadRouter_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: displayName, selected: current === type }))));
+        React.createElement("div", { id: "myDropdown", className: "dropdown-content", ref: ref },
+            React.createElement("select", null, DownloadRouter_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: displayName, selected: current === type })))));
 };
 const Option = ({ option: { enabled, test, route, type } }) => {
-    const { displayName } = DownloadRouter_1.DownloadRouter[type];
+    console.log(route);
     return React.createElement("table", null,
         React.createElement("thead", null,
             React.createElement("tr", null,
-                React.createElement("th", null, displayName),
-                React.createElement("th", null, test),
-                React.createElement("th", null, route.toString()),
-                React.createElement("th", null, enabled))),
+                React.createElement("th", null, "Type"),
+                React.createElement("th", null, "Test"),
+                React.createElement("th", null, "Destination Directory"),
+                React.createElement("th", null, "Enabled"))),
         React.createElement("tbody", null,
             React.createElement("tr", null,
                 React.createElement("td", null,
@@ -43,6 +44,7 @@ class Options extends react_1.Component {
     constructor(props) {
         super(props);
         this.options = serialize_1.getRouterOptions();
+        console.log(this.options);
     }
     render() {
         return React.createElement("div", null,

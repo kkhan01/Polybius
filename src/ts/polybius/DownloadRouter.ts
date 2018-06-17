@@ -6,6 +6,8 @@ import DownloadItem = chrome.downloads.DownloadItem;
 
 export interface Path {
     
+    readonly path: string;
+    
     readonly filename: string;
     
     readonly extension: string;
@@ -28,13 +30,14 @@ export const Path = {
         const {root, dir, base, name, ext} = pathLib.parse(path);
         
         return {
+            path: path,
             fullFilename: base,
             filename: name,
             extension: ext,
             append: (newPath: Path | string) => Path.of(pathLib.resolve(path, newPath.toString())),
             absolute: () => Path.of(pathLib.resolve(path)),
             toString: () => path,
-        };
+        }.freeze();
     },
     
 };
@@ -185,7 +188,13 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
                     type,
                     
                     create: (options): DownloadRouter => {
+                        console.log(options);
                         const {enabled, test, route} = options;
+                        const _options = {
+                            ...options,
+                            type: type,
+                        };
+                        console.log("_options", _options);
                         return {
                             options: {
                                 ...options,

@@ -8,13 +8,14 @@ exports.Path = {
     of(path) {
         const { root, dir, base, name, ext } = pathLib.parse(path);
         return {
+            path: path,
             fullFilename: base,
             filename: name,
             extension: ext,
             append: (newPath) => exports.Path.of(pathLib.resolve(path, newPath.toString())),
             absolute: () => exports.Path.of(pathLib.resolve(path)),
             toString: () => path,
-        };
+        }.freeze();
     },
 };
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
@@ -43,7 +44,13 @@ exports.DownloadRouter = (() => {
                 return {
                     type,
                     create: (options) => {
+                        console.log(options);
                         const { enabled, test, route } = options;
+                        const _options = {
+                            ...options,
+                            type: type,
+                        };
+                        console.log("_options", _options);
                         return {
                             options: {
                                 ...options,

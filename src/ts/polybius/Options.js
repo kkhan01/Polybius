@@ -4,16 +4,18 @@ const React = require("react");
 const react_1 = require("react");
 const ReactDOM = require("react-dom");
 const anyWindow_1 = require("../util/anyWindow");
-const NotNullRef_1 = require("../util/refs/NotNullRef");
 const DownloadRouter_1 = require("./DownloadRouter");
 const serialize_1 = require("./serialize");
-const RouterTypesDropdown = ({ current }) => {
-    const ref = NotNullRef_1.createNotNullRef();
-    return React.createElement("div", { className: "dropdown" },
-        React.createElement("button", { onClick: () => ref.current.classList.toggle("show"), className: "dropbtn" }, "Dropdown"),
-        React.createElement("div", { id: "myDropdown", className: "dropdown-content", ref: ref },
-            React.createElement("select", null, DownloadRouter_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: displayName, selected: current === type })))));
-};
+class RouterTypesDropdown extends react_1.Component {
+    // private readonly ref: NotNullRef<HTMLDivElement> = createNotNullRef();
+    componentDidMount() {
+        // const elements = document.querySelectorAll(".dropdown-trigger");
+        // M.Dropdown.init(elements, {});
+    }
+    render() {
+        return React.createElement("select", { style: { display: "block" } }, DownloadRouter_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: type, selected: this.props.current === type }, displayName)));
+    }
+}
 const Option = ({ option: { enabled, test, route, type } }) => {
     console.log(route);
     return React.createElement("table", null,

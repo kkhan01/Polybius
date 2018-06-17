@@ -6,24 +6,30 @@ import {createNotNullRef, NotNullRef} from "../util/refs/NotNullRef";
 import {DownloadRouterType, RouterOptions, Routers} from "./DownloadRouter";
 import {getRouterOptions} from "./serialize";
 
-const RouterTypesDropdown: SFC<{current: DownloadRouterType}> = ({current}) => {
+interface RouterTypesDropdownProps {
     
-    const ref: NotNullRef<HTMLDivElement> = createNotNullRef();
+    current: DownloadRouterType;
     
-    return <div className="dropdown">
-        <button onClick={() => ref.current.classList.toggle("show")}
-                className="dropbtn">
-            Dropdown
-        </button>
-        <div id="myDropdown" className="dropdown-content" ref={ref}>
-            <select>
-                {Routers.map(({type, displayName}) =>
-                    <option key={type} value={displayName} selected={current === type}/>)
-                }
-            </select>
-        </div>
-    </div>;
-};
+}
+
+class RouterTypesDropdown extends Component<RouterTypesDropdownProps, {}> {
+    
+    // private readonly ref: NotNullRef<HTMLDivElement> = createNotNullRef();
+    
+    public componentDidMount(): void {
+        // const elements = document.querySelectorAll(".dropdown-trigger");
+        // M.Dropdown.init(elements, {});
+    }
+    
+    public render(): ReactNode {
+        return <select style={{display: "block"}}>
+            {Routers.map(({type, displayName}) =>
+                <option key={type} value={type} selected={this.props.current === type}>{displayName}</option>)
+            }
+        </select>;
+    }
+    
+}
 
 
 const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {

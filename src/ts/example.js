@@ -73,8 +73,8 @@ const Rule = function (data) {
         this.getElement("action-js").value = data.action_js;
         this.getElement("enabled").checked = data.enabled;
     }
-    this.getElement("enabled-label").htmlFor = this.getElement("enabled").id =
-        this.node.id + "-enabled";
+    this.getElement("download-label").htmlFor = this.getElement("enabled").id =
+        this.node.id + "-download";
     this.render();
     this.getElement("matcher").onchange = storeRules;
     this.getElement("match-param").onkeyup = storeRules;

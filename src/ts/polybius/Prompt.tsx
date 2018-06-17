@@ -1,30 +1,44 @@
-import {SFC} from "react";
 import * as React from "react";
+import {ReactNode, SFC} from "react";
+import * as ReactDOM from "react-dom";
 import {DownloadAction} from "./DownloadRouter";
 
 let selectedAction: DownloadAction | null = null;
 
-function actionlist(actionarray) {
-  const listItems = actionarray.map((action, i) =>
-  <p>
-	<label>
-		<input name="group1" type="radio" {i == 0 ? checked : unchecked} onClick={() => selectedAction = action} />
-		<span>{action}</span>
-  	</label>
-  </p>
-  );
-  return (
-    <form>{listItems}</form>
-  );
+const actionList = function(actionArray: DownloadAction[]): ReactNode {
+    selectedAction = actionArray[0];
+    const listItems = actionArray.map((action, i) =>
+        <p>
+            <label>
+                <input name="group1" type="radio" checked={i === 0}
+                       onClick={() => selectedAction = action}/>
+                <span>{action}</span>
+            </label>
+        </p>
+    );
+    return (
+        <form>{listItems}</form>
+    );
 };
 
 interface PromptProps {
-	  actions: DownloadAction[];
-	  select(action: DownloadAction): void;
+    
+    readonly actions: DownloadAction[];
+    
+    select(action: DownloadAction): void;
+    
 }
 
 const Prompt: SFC<PromptProps> = ({actions, select}) => {
-    return <div>It seems multiple rules can be applied. Please choose a path:<br/>{actionlist(actions)}
-    <a class="waves-effect waves-light btn" onClick={() => select(selectedAction)}>Apply</a>
+    return <div>
+        It seems multiple rules can be applied. Please choose a path:
+        <br/>
+        {actionList(actions)}
+        <a className="waves-effect waves-light btn" onClick={() => select(selectedAction)}>Apply</a>
     </div>;
+};
+
+export const renderPrompt = function(actions: DownloadAction[], select: (action: DownloadAction) => void): void {
+    const popupRoot = document.body.appendDiv();
+    ReactDOM.render(<Prompt actions={actions} select={select}/>, popupRoot);
 };

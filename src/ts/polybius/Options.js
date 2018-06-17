@@ -4,7 +4,6 @@ const React = require("react");
 const react_1 = require("react");
 const ReactDOM = require("react-dom");
 const anyWindow_1 = require("../util/anyWindow");
-const serialize_1 = require("./serialize");
 const Option = ({ option: { destination, filename, extension } }) => {
     return React.createElement("tr", null,
         React.createElement("td", null, destination),
@@ -17,7 +16,7 @@ const ExistingOptions = ({ options }) => {
 class Options extends react_1.Component {
     constructor(props) {
         super(props);
-        this.options = serialize_1.getRouters();
+        this.options = [];
     }
     render() {
         return React.createElement("div", null,
@@ -39,11 +38,6 @@ class Options extends react_1.Component {
 exports.reactMain = function () {
     const root = document.body.appendDiv();
     anyWindow_1.anyWindow.root = root;
-    ReactDOM.render(React.createElement(Options, { options: [
-            {
-                destination: "",
-                extension: "js",
-            }
-        ] }), root);
+    ReactDOM.render(React.createElement(Options, null), root);
 };
 //# sourceMappingURL=Options.js.map

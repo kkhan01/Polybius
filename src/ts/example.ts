@@ -82,8 +82,8 @@ const Rule: any = function(this: any, data: any) {
         this.getElement("enabled").checked = data.enabled;
     }
     
-    this.getElement("enabled-label").htmlFor = this.getElement("enabled").id =
-        this.node.id + "-enabled";
+    this.getElement("download-label").htmlFor = this.getElement("enabled").id =
+        this.node.id + "-download";
     
     this.render();
     

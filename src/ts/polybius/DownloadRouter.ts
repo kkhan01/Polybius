@@ -1,5 +1,6 @@
-import DownloadItem = chrome.downloads.DownloadItem;
+import {renderPrompt} from "./Prompt";
 import {getRouters} from "./serialize";
+import DownloadItem = chrome.downloads.DownloadItem;
 
 export interface Path {
     
@@ -56,10 +57,20 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
         suggest({filename: path.toString(), conflictAction});
     }
     
+    const select = ({path, conflictAction}: DownloadAction): void => {
+        suggest({filename: path.toString(), conflictAction});
+    };
+    
     const actions: DownloadAction[] = getRouters()
         .filter(router => router.test(downloadItem))
         .map(router => router.route(downloadItem));
     
+    if (actions.length === 0) {
+        suggest({filename: downloadItem.filename, conflictAction: "prompt"});
+    } else if (actions.length === 1) {
+        select(actions[0]);
+    }
+    renderPrompt(actions, select);
 });
 
 interface RouterOptions<T> {
@@ -72,7 +83,7 @@ interface RouterOptions<T> {
     
 }
 
-interface DownloadRouterConstructor<T> {
+interface DownloadRouterConstructor<T = string> {
     
     (options: RouterOptions<T>): DownloadRouter;
     
@@ -80,21 +91,35 @@ interface DownloadRouterConstructor<T> {
     
 }
 
-interface DownloadRouterConstructors {
+type DownloadRouterConstructorMap = {[key: string]: DownloadRouterConstructor<any>};
+
+interface DownloadRouterConstructors extends DownloadRouterConstructorMap {
     
-    enabled: DownloadRouterConstructor<DownloadItem>;
+    download: DownloadRouterConstructor<DownloadItem>;
     
     path: DownloadRouterConstructor<Path>;
     
-    filename: DownloadRouterConstructor<string>;
+    filename: DownloadRouterConstructor;
     
-    extension: DownloadRouterConstructor<string>;
+    extension: DownloadRouterConstructor;
     
     fileSize: DownloadRouterConstructor<number>;
     
     url: DownloadRouterConstructor<URL>;
     
+    urlHref: DownloadRouterConstructor;
+    
+    urlProtocol: DownloadRouterConstructor;
+    
+    urlHost: DownloadRouterConstructor;
+    
+    urlPath: DownloadRouterConstructor;
+    
+    urlHash: DownloadRouterConstructor;
+    
 }
+
+export type DownloadRouterType = keyof DownloadRouterConstructors;
 
 const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructors => {
     
@@ -119,21 +144,36 @@ const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructo
     const byExtension = byPath.map(path => path.extension);
     const byFileSize = byEnabled.map(download => download.fileSize);
     const byUrl = byEnabled.map(download => new URL(download.url));
+    const byUrlHref = byUrl.map(url => url.href);
+    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, url.protocol.length - 1)); // strip trailing :
+    const byUrlHost = byUrl.map(url => url.host);
+    const byUrlPath = byUrl.map(url => url.pathname);
+    const byUrlHash = byUrl.map(url => url.hash.slice(1));
     
     return {
-        enabled: byEnabled,
+        download: byEnabled,
         path: byPath,
         filename: byFilename,
         extension: byExtension,
         fileSize: byFileSize,
         url: byUrl,
+        urlHref: byUrlHref,
+        urlProtocol: byUrlProtocol,
+        urlHost: byUrlHost,
+        urlPath: byUrlPath,
+        urlHash: byUrlHash,
     };
     
 })();
 
+// const _DownloadRouter: StringDownloadRouterConstructors = (() => {
+//
+// })();
+
 const regexTest = function(regex: RegExp): Test<string> {
     return s => regex.test(s);
 };
+
 
 export const f = function(): void {
     const router = DownloadRouter.url.map(url => url.hash)({

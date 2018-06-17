@@ -3,7 +3,6 @@ import {Component, ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
 import {anyWindow} from "../util/anyWindow";
 import {Path} from "./DownloadRouter";
-import {getRouters} from "./serialize";
 
 
 export interface RouterOptions {
@@ -32,11 +31,10 @@ const ExistingOptions: SFC<{options: RouterOptions[]}> = ({options}) => {
     </div>;
 };
 
-
 interface OptionsState {
-
+    
     readonly options: RouterOptions[];
-
+    
 }
 
 
@@ -46,7 +44,7 @@ class Options extends Component<{}, OptionsState> {
     
     public constructor(props: {}) {
         super(props);
-        this.options = getRouters();
+        this.options = [];
     }
     
     public render(): ReactNode {
@@ -72,10 +70,5 @@ class Options extends Component<{}, OptionsState> {
 export const reactMain = function(): void {
     const root = document.body.appendDiv();
     anyWindow.root = root;
-    ReactDOM.render(<Options options={[
-        {
-            destination: "" as any as Path,
-            extension: "js",
-        }
-    ]}/>, root);
+    ReactDOM.render(<Options/>, root);
 };

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Component, ReactNode} from "react";
-import {Range} from "../../../share/util/Range";
+import {Range} from "../Range";
 
 export class Repeat extends Component<{
     times: number,

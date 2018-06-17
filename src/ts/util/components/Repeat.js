@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = require("react");
 const react_1 = require("react");
-const Range_1 = require("../../../share/util/Range");
+const Range_1 = require("../Range");
 class Repeat extends react_1.Component {
     render() {
         const { props: { times, render } } = this;

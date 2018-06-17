@@ -50,13 +50,6 @@ export interface DownloadRouter {
 
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
-    const router = getRouters()
-        .find(router => router.test(downloadItem));
-    if (router) {
-        const {path, conflictAction} = router.route(downloadItem);
-        suggest({filename: path.toString(), conflictAction});
-    }
-    
     const select = ({path, conflictAction}: DownloadAction): void => {
         suggest({filename: path.toString(), conflictAction});
     };
@@ -73,7 +66,7 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     renderPrompt(actions, select);
 });
 
-interface RouterOptions<T> {
+interface TestRouterOptions<T> {
     
     readonly enabled: boolean;
     
@@ -83,29 +76,47 @@ interface RouterOptions<T> {
     
 }
 
-interface DownloadRouterConstructor<T = string> {
+export interface RouterOptions {
     
-    (options: RouterOptions<T>): DownloadRouter;
+    readonly enabled: boolean;
     
-    map<U>(map: (t: T) => U): DownloadRouterConstructor<U>;
+    readonly test: string;
+    
+    readonly route: DownloadRoute;
     
 }
 
-type DownloadRouterConstructorMap = {[key: string]: DownloadRouterConstructor<any>};
+interface TestDownloadRouterConstructor<T = string> {
+    
+    (options: TestRouterOptions<T>): DownloadRouter;
+    
+    map<U>(map: (t: T) => U): TestDownloadRouterConstructor<U>;
+    
+    wrap(map: (input: string) => Test<T>): DownloadRouterConstructor;
+    
+}
+
+interface DownloadRouterConstructor {
+    
+    (options: RouterOptions): DownloadRouter;
+    
+}
+
+type DownloadRouterConstructorMap = {[key: string]: DownloadRouterConstructor};
 
 interface DownloadRouterConstructors extends DownloadRouterConstructorMap {
     
-    download: DownloadRouterConstructor<DownloadItem>;
+    download: DownloadRouterConstructor;
     
-    path: DownloadRouterConstructor<Path>;
+    path: DownloadRouterConstructor;
     
     filename: DownloadRouterConstructor;
     
     extension: DownloadRouterConstructor;
     
-    fileSize: DownloadRouterConstructor<number>;
+    fileSize: DownloadRouterConstructor;
     
-    url: DownloadRouterConstructor<URL>;
+    url: DownloadRouterConstructor;
     
     urlHref: DownloadRouterConstructor;
     
@@ -121,19 +132,30 @@ interface DownloadRouterConstructors extends DownloadRouterConstructorMap {
 
 export type DownloadRouterType = keyof DownloadRouterConstructors;
 
-const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructors => {
+
+export interface SavedRouterOptions extends RouterOptions {
     
-    const construct = <T>(plainConstructor: (options: RouterOptions<T>) => DownloadRouter): DownloadRouterConstructor<T> => {
-        const constructor = plainConstructor as DownloadRouterConstructor<T>;
-        constructor.map = <U>(map: (t: T) => U): DownloadRouterConstructor<U> => {
-            return construct(({enabled, test, route}: RouterOptions<U>) =>
+    readonly type: DownloadRouterType;
+    
+}
+
+export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructors => {
+    
+    const construct = <T>(plainConstructor: (options: TestRouterOptions<T>) => DownloadRouter): TestDownloadRouterConstructor<T> => {
+        const constructor = plainConstructor as TestDownloadRouterConstructor<T>;
+        constructor.map = <U>(map: (t: T) => U): TestDownloadRouterConstructor<U> => {
+            return construct(({enabled, test, route}: TestRouterOptions<U>) =>
                 constructor({enabled, test: (t: T) => test(map(t)), route}));
+        };
+        constructor.wrap = (map: (input: string) => Test<T>): DownloadRouterConstructor => {
+            return ({enabled, test, route}) =>
+                constructor({enabled, test: map(test), route});
         };
         return constructor;
     };
     
-    const byEnabled: DownloadRouterConstructor<DownloadItem> = construct(
-        ({enabled, test, route}: RouterOptions<DownloadItem>) => ({
+    const byEnabled: TestDownloadRouterConstructor<DownloadItem> = construct(
+        ({enabled, test, route}: TestRouterOptions<DownloadItem>) => ({
             test: (download: DownloadItem) => enabled && test(download),
             route,
         })
@@ -150,18 +172,31 @@ const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructo
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
     
+    const inputStringMap = (input: string) => (s: string) => input === s;
+    
+    const parseFunction = <T>(functionBody: string): Test<T> => {
+        return {} as any as Test<T>;
+    };
+    
+    const numberFunctionMap = (input: string): Test<number> => {
+        const _n: number = parseInt(input);
+        return n => _n === n;
+    };
+    
+    const inputFunctionMap = <T>(input: string) => parseFunction(input);
+    
     return {
-        download: byEnabled,
-        path: byPath,
-        filename: byFilename,
-        extension: byExtension,
-        fileSize: byFileSize,
-        url: byUrl,
-        urlHref: byUrlHref,
-        urlProtocol: byUrlProtocol,
-        urlHost: byUrlHost,
-        urlPath: byUrlPath,
-        urlHash: byUrlHash,
+        download: byEnabled.wrap(inputFunctionMap),
+        path: byPath.wrap(inputFunctionMap),
+        filename: byFilename.wrap(inputStringMap),
+        extension: byExtension.wrap(inputStringMap),
+        fileSize: byFileSize.wrap(numberFunctionMap),
+        url: byUrl.wrap(inputFunctionMap),
+        urlHref: byUrlHref.wrap(inputStringMap),
+        urlProtocol: byUrlProtocol.wrap(inputStringMap),
+        urlHost: byUrlHost.wrap(inputStringMap),
+        urlPath: byUrlPath.wrap(inputStringMap),
+        urlHash: byUrlHash.wrap(inputStringMap),
     };
     
 })();
@@ -176,9 +211,9 @@ const regexTest = function(regex: RegExp): Test<string> {
 
 
 export const f = function(): void {
-    const router = DownloadRouter.url.map(url => url.hash)({
+    const router = DownloadRouter.urlHash({
         enabled: true,
-        test: /google/.boundTest(),
+        test: "google",
         route: download => ({
             path: Path.of(""),
             conflictAction: "overwrite",

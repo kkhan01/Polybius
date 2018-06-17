@@ -34,7 +34,10 @@ const Prompt: SFC<PromptProps> = ({actions, select}) => {
         It seems multiple rules can be applied. Please choose a path:
         <br/>
         {actionList(actions)}
-        <a className="waves-effect waves-light btn" onClick={() => select(selectedAction)}>Apply</a>
+        <a className="waves-effect waves-light btn"
+           onClick={() => select(selectedAction as DownloadAction)}>
+            Apply
+        </a>
     </div>;
 };
 

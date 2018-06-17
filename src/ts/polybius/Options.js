@@ -18,7 +18,6 @@ class RouterTypesDropdown extends react_1.Component {
     }
 }
 const Option = ({ option: { enabled, test, route, type } }) => {
-    console.log(route);
     return React.createElement("table", null,
         React.createElement("thead", null,
             React.createElement("tr", null,
@@ -52,11 +51,6 @@ class Options extends react_1.Component {
     render() {
         return React.createElement("div", null,
             React.createElement("table", null,
-                React.createElement("tr", null,
-                    React.createElement("td", null, "Type"),
-                    React.createElement("td", null, "Test"),
-                    React.createElement("td", null, "Destination Directory"),
-                    React.createElement("td", null, "Enabled")),
                 React.createElement(ExistingOptions, { options: this.options }),
                 React.createElement("tr", null,
                     React.createElement("td", null,

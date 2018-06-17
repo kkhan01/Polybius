@@ -90,7 +90,8 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     const select = ({path, conflictAction}: DownloadAction): void => {
         alertObj({path, conflictAction});
         const filename = path.toString().slice(1);
-        suggest({filename: "/pngs/Cat-PNG-HD.png", conflictAction});
+        console.log(filename);
+        suggest({filename, conflictAction});
     };
     
     // console.log(getRouters());

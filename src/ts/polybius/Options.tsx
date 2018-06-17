@@ -34,7 +34,7 @@ class RouterTypesDropdown extends Component<RouterTypesDropdownProps, {}> {
 
 
 const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
-    console.log(route);
+    
     
     return <table>
         <thead>
@@ -94,12 +94,7 @@ class Options extends Component<{}, OptionsState> {
     public render(): ReactNode {
         return <div>
             <table>
-                <tr>
-                    <td>Type</td>
-                    <td>Test</td>
-                    <td>Destination Directory</td>
-                    <td>Enabled</td>
-                </tr>
+
                 <ExistingOptions options={this.options}/>
                 <tr>
                     <td><input type="text" name="destination" value="~/"/></td>

@@ -24,12 +24,37 @@ const RouterTypes: SFC<{}> = props => {
 
 const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
     const {displayName} = DownloadRouter[type];
-    return <tr>
-        <td>{displayName}</td>
-        <td>{test}</td>
-        <td>{route.toString()}</td>
-        <td>{enabled}</td>
-    </tr>;
+    return <table>
+		<thead>
+			<tr>
+			<th>{displayName}</th>
+              		<th>{test}</th>
+              		<th>{route.toString()}</th>
+			<th>{enabled}</th>
+          		</tr>
+        	</thead>
+
+        	<tbody>
+			<tr>
+				<td>
+				<input placeholder="Placeholder" id="type" type="text" class="validate">
+          			<label for="type"></label>
+				</td>
+            		<td>
+			<input placeholder="Placeholder" id="test" type="text" class="validate">
+          			<label for="test"></label>
+			</td>
+            		<td>
+			<input placeholder="Placeholder" id="destdir" type="text" class="validate">
+          			<label for="destdir"></label>
+			</td>
+			<td>
+			<input placeholder="Placeholder" id="enabled" type="text" class="validate">
+          			<label for="enabled"></label>
+			</td>
+          		</tr>
+		</tbody>
+    	</table>
 };
 
 

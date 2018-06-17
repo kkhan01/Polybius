@@ -5,10 +5,10 @@ const ReactDOM = require("react-dom");
 let selectedAction = null;
 const actionList = function (actionArray) {
     selectedAction = actionArray[0];
-    const listItems = actionArray.map((action, i) => React.createElement("p", null,
+    const listItems = actionArray.map((action, i) => React.createElement("p", { key: i },
         React.createElement("label", null,
             React.createElement("input", { name: "group1", type: "radio", checked: i === 0, onClick: () => selectedAction = action }),
-            React.createElement("span", null, action))));
+            React.createElement("span", null, action.path.path))));
     return (React.createElement("form", null, listItems));
 };
 const Prompt = ({ actions, select }) => {

@@ -15,20 +15,42 @@ exports.Path = {
             append: (newPath) => exports.Path.of(pathLib.resolve(path, newPath.toString())),
             absolute: () => exports.Path.of(pathLib.resolve(path)),
             toString: () => path,
-        }.freeze();
+        };
     },
 };
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
-    const select = ({ path, conflictAction }) => {
-        suggest({ filename: path.toString(), conflictAction });
+    console.log(downloadItem);
+    const alertObj = (obj) => {
+        console.log(obj);
+        console.log(obj.length);
+        // alert(JSON.stringify(obj, null, 2));
     };
+    // alertObj(downloadItem);
+    const select = ({ path, conflictAction }) => {
+        alertObj({ path, conflictAction });
+        const filename = path.toString().slice(1);
+        suggest({ filename: "/pngs/Cat-PNG-HD.png", conflictAction });
+    };
+    // console.log(getRouters());
+    // alertObj(getRouters());
     const actions = serialize_1.getRouters()
         .filter(router => router.test(downloadItem))
         .map(router => router.route(downloadItem));
+    // alertObj(actions);
     if (actions.length === 0) {
-        suggest({ filename: downloadItem.filename, conflictAction: "prompt" });
+        try {
+            actions.push(serialize_1.getRouters()[1].route(downloadItem));
+        }
+        catch (e) {
+            console.log("error");
+            console.error(e);
+        }
+        alertObj(actions);
+        // suggest({filename: downloadItem.filename, conflictAction: "prompt"});
     }
-    else if (actions.length === 1) {
+    if (actions.length === 1) {
+        // console.log("actions", actions);
+        // console.log("selecting", actions[0]);
         select(actions[0]);
     }
     Prompt_1.renderPrompt(actions, select);
@@ -60,8 +82,12 @@ exports.DownloadRouter = (() => {
                                 enabled,
                                 test: map(test),
                                 route: download => ({
-                                    path: route.append(exports.Path.of(download.filename).fullFilename),
-                                    conflictAction: "prompt",
+                                    path: (() => {
+                                        const x = route.append(exports.Path.of(download.filename).fullFilename);
+                                        console.log(x);
+                                        return x;
+                                    })(),
+                                    conflictAction: "uniquify",
                                 }),
                             }),
                         };
@@ -118,22 +144,22 @@ exports.f = function () {
         exports.DownloadRouter.urlHash.create({
             enabled: true,
             test: "google",
-            route: exports.Path.of("path"),
+            route: exports.Path.of("google"),
         }),
         exports.DownloadRouter.extension.create({
             enabled: true,
             test: "png",
-            route: exports.Path.of("~/Desktop/pngs"),
+            route: exports.Path.of("pngs"),
         }),
         exports.DownloadRouter.extension.create({
             enabled: true,
             test: "pdf",
-            route: exports.Path.of("~/Desktop/pdfs"),
+            route: exports.Path.of("pdfs"),
         }),
         exports.DownloadRouter.filename.create({
             enabled: true,
             test: "logo",
-            route: exports.Path.of("~/Desktop/logos"),
+            route: exports.Path.of("logos"),
         }),
     ].map(router => router.options));
 };

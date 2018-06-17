@@ -2,6 +2,7 @@ import * as React from "react";
 import {Component, ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
 import {anyWindow} from "../util/anyWindow";
+import {Repeat} from "../util/components/Repeat";
 import {createNotNullRef, NotNullRef} from "../util/refs/NotNullRef";
 import {DownloadRouterType, RouterOptions, Routers} from "./DownloadRouter";
 import {getRouterOptions} from "./serialize";
@@ -106,6 +107,14 @@ class Options extends Component<{}, OptionsState> {
                     <td><input type="text" name="extension" value=""/></td>
                 </tr>
             </table>
+            
+            
+            <Repeat times={5} render={() => <br/>}/>
+            
+            <a href="http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png" download style={{fontSize: "larger", margin: 100}}>PNG</a>
+    
+            <Repeat times={5} render={() => <br/>}/>
+            
         </div>;
     }
     

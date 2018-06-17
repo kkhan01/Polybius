@@ -4,6 +4,7 @@ const React = require("react");
 const react_1 = require("react");
 const ReactDOM = require("react-dom");
 const anyWindow_1 = require("../util/anyWindow");
+const Repeat_1 = require("../util/components/Repeat");
 const DownloadRouter_1 = require("./DownloadRouter");
 const serialize_1 = require("./serialize");
 class RouterTypesDropdown extends react_1.Component {
@@ -63,7 +64,10 @@ class Options extends react_1.Component {
                     React.createElement("td", null,
                         React.createElement("input", { type: "text", name: "firstname", value: "" })),
                     React.createElement("td", null,
-                        React.createElement("input", { type: "text", name: "extension", value: "" })))));
+                        React.createElement("input", { type: "text", name: "extension", value: "" })))),
+            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
+            React.createElement("a", { href: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png", download: true, style: { fontSize: "larger", margin: 100 } }, "PNG"),
+            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }));
     }
 }
 exports.reactMain = function () {

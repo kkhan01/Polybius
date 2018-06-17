@@ -8,11 +8,11 @@ let selectedAction: DownloadAction | null = null;
 const actionList = function(actionArray: DownloadAction[]): ReactNode {
     selectedAction = actionArray[0];
     const listItems = actionArray.map((action, i) =>
-        <p>
+        <p key={i}>
             <label>
                 <input name="group1" type="radio" checked={i === 0}
                        onClick={() => selectedAction = action}/>
-                <span>{action}</span>
+                <span>{action.path.path}</span>
             </label>
         </p>
     );

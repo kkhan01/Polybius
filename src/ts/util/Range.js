@@ -24,5 +24,5 @@ exports.Range = {
     ofDomain(domain) {
         return this.new(Math.min(...domain), Math.max(...domain));
     },
-}.freeze();
+};
 //# sourceMappingURL=Range.js.map

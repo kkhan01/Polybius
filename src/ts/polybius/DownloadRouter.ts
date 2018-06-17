@@ -37,7 +37,7 @@ export const Path = {
             append: (newPath: Path | string) => Path.of(pathLib.resolve(path, newPath.toString())),
             absolute: () => Path.of(pathLib.resolve(path)),
             toString: () => path,
-        }.freeze();
+        };
     },
     
 };
@@ -77,17 +77,44 @@ export interface DownloadRouter extends OptionLessDownloadRouter {
 
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
-    const select = ({path, conflictAction}: DownloadAction): void => {
-        suggest({filename: path.toString(), conflictAction});
+    console.log(downloadItem);
+    
+    const alertObj = (obj: any) => {
+        console.log(obj);
+        console.log(obj.length);
+        // alert(JSON.stringify(obj, null, 2));
     };
+    
+    // alertObj(downloadItem);
+    
+    const select = ({path, conflictAction}: DownloadAction): void => {
+        alertObj({path, conflictAction});
+        const filename = path.toString().slice(1);
+        suggest({filename: "/pngs/Cat-PNG-HD.png", conflictAction});
+    };
+    
+    // console.log(getRouters());
+    // alertObj(getRouters());
     
     const actions: DownloadAction[] = getRouters()
         .filter(router => router.test(downloadItem))
         .map(router => router.route(downloadItem));
     
+    // alertObj(actions);
+    
     if (actions.length === 0) {
-        suggest({filename: downloadItem.filename, conflictAction: "prompt"});
-    } else if (actions.length === 1) {
+        try {
+            actions.push(getRouters()[1].route(downloadItem));
+        } catch (e) {
+            console.log("error");
+            console.error(e);
+        }
+        alertObj(actions);
+        // suggest({filename: downloadItem.filename, conflictAction: "prompt"});
+    }
+    if (actions.length === 1) {
+        // console.log("actions", actions);
+        // console.log("selecting", actions[0]);
         select(actions[0]);
     }
     renderPrompt(actions, select);
@@ -204,8 +231,12 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
                                 enabled,
                                 test: map(test),
                                 route: download => ({
-                                    path: route.append(Path.of(download.filename).fullFilename),
-                                    conflictAction: "prompt",
+                                    path: (() => {
+                                        const x = route.append(Path.of(download.filename).fullFilename);
+                                        console.log(x);
+                                        return x;
+                                    })(),
+                                    conflictAction: "uniquify",
                                 }),
                             }),
                         };
@@ -280,22 +311,22 @@ export const f = function(): void {
         DownloadRouter.urlHash.create({
             enabled: true,
             test: "google",
-            route: Path.of("path"),
+            route: Path.of("google"),
         }),
         DownloadRouter.extension.create({
             enabled: true,
             test: "png",
-            route: Path.of("~/Desktop/pngs"),
+            route: Path.of("pngs"),
         }),
         DownloadRouter.extension.create({
             enabled: true,
             test: "pdf",
-            route: Path.of("~/Desktop/pdfs"),
+            route: Path.of("pdfs"),
         }),
         DownloadRouter.filename.create({
             enabled: true,
             test: "logo",
-            route: Path.of("~/Desktop/logos"),
+            route: Path.of("logos"),
         }),
     ].map(router => router.options));
 };

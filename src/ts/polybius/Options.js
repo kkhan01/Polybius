@@ -63,6 +63,8 @@ class Options extends react_1.Component {
             React.createElement("a", { href: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png", download: true, style: { fontSize: "larger", margin: 100 } }, "PNG"),
             React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
             React.createElement("a", { href: "http://www.pdf995.com/samples/pdf.pdf", download: true, style: { fontSize: "larger", margin: 100 } }, "PDF"),
+            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
+            React.createElement("a", { href: "https://github.com/kkysen/Polybius/raw/master/src/img/logo.png", download: true, style: { fontSize: "larger", margin: 100 } }, "Logo"),
             React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }));
     }
 }

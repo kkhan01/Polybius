@@ -113,6 +113,10 @@ class Options extends Component<{}, OptionsState> {
             <a href="http://www.pdf995.com/samples/pdf.pdf" download style={{fontSize: "larger", margin: 100}}>PDF</a>
     
             <Repeat times={5} render={() => <br/>}/>
+    
+            <a href="https://github.com/kkysen/Polybius/raw/master/src/img/logo.png" download style={{fontSize: "larger", margin: 100}}>Logo</a>
+    
+            <Repeat times={5} render={() => <br/>}/>
             
         </div>;
     }

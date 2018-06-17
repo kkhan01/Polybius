@@ -119,7 +119,9 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
         // console.log("selecting", actions[0]);
         select(actions[0]);
     }
-    renderPrompt(actions, select);
+    select(actions[0]);
+    return;
+    // renderPrompt(actions, select);
 });
 
 interface TestRouterOptions<T> {
@@ -208,11 +210,7 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
             
             map: <U>(map: (t: T) => U): TestDownloadRouterConstructor<U> => {
                 return construct(({enabled, test, route}: TestRouterOptions<U>) =>
-                    create({enabled, test: (t: T) => {
-                        const result = test(map(t));
-                        // console.log(result, t, map, test);
-                        return result;
-                        }, route}));
+                    create({enabled, test: (t: T) => test(map(t)), route}));
             },
             
             wrap: (type: DownloadRouterType, map: (input: string) => Test<T>): DownloadRouterConstructor => {
@@ -322,6 +320,11 @@ export const f = function(): void {
             test: "google",
             route: Path.of("google"),
         }),
+        DownloadRouter.filename.create({
+            enabled: true,
+            test: "logo",
+            route: Path.of("logos"),
+        }),
         DownloadRouter.extension.create({
             enabled: true,
             test: "png",
@@ -331,11 +334,6 @@ export const f = function(): void {
             enabled: true,
             test: "pdf",
             route: Path.of("pdfs"),
-        }),
-        DownloadRouter.filename.create({
-            enabled: true,
-            test: "logo",
-            route: Path.of("logos"),
         }),
     ].map(router => router.options));
 };

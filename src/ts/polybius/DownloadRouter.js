@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const pathLib = require("path-browserify");
 const utils_1 = require("../util/utils");
-const Prompt_1 = require("./Prompt");
 const serialize_1 = require("./serialize");
 exports.Path = {
     of(path) {
@@ -54,18 +53,16 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
         // console.log("selecting", actions[0]);
         select(actions[0]);
     }
-    Prompt_1.renderPrompt(actions, select);
+    select(actions[0]);
+    return;
+    // renderPrompt(actions, select);
 });
 exports.DownloadRouter = (() => {
     const construct = (create) => {
         return {
             create,
             map: (map) => {
-                return construct(({ enabled, test, route }) => create({ enabled, test: (t) => {
-                        const result = test(map(t));
-                        // console.log(result, t, map, test);
-                        return result;
-                    }, route }));
+                return construct(({ enabled, test, route }) => create({ enabled, test: (t) => test(map(t)), route }));
             },
             wrap: (type, map) => {
                 return {
@@ -154,6 +151,11 @@ exports.f = function () {
             test: "google",
             route: exports.Path.of("google"),
         }),
+        exports.DownloadRouter.filename.create({
+            enabled: true,
+            test: "logo",
+            route: exports.Path.of("logos"),
+        }),
         exports.DownloadRouter.extension.create({
             enabled: true,
             test: "png",
@@ -163,11 +165,6 @@ exports.f = function () {
             enabled: true,
             test: "pdf",
             route: exports.Path.of("pdfs"),
-        }),
-        exports.DownloadRouter.filename.create({
-            enabled: true,
-            test: "logo",
-            route: exports.Path.of("logos"),
         }),
     ].map(router => router.options));
 };

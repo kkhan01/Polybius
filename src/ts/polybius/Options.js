@@ -15,6 +15,9 @@ const serialize_1 = require("./serialize");
 //     extension?: string;
 //
 // }
+const RouterTypes = props => {
+    return React.createElement("div", null);
+};
 const Option = ({ option: { enabled, test, route, type } }) => {
     const { displayName } = DownloadRouter_1.DownloadRouter[type];
     return React.createElement("tr", null,

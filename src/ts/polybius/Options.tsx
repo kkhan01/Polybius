@@ -17,6 +17,11 @@ import {getRouterOptions} from "./serialize";
 // }
 
 
+const RouterTypes: SFC<{}> = props => {
+    return <div></div>;
+};
+
+
 const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
     const {displayName} = DownloadRouter[type];
     return <tr>

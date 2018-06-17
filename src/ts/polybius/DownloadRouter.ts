@@ -1,4 +1,5 @@
 import DownloadItem = chrome.downloads.DownloadItem;
+import {getRouters} from "./serialize";
 
 export interface Path {
     
@@ -18,7 +19,7 @@ export const Path = {
     }
 };
 
-interface DownloadAction {
+export interface DownloadAction {
     
     readonly path: Path;
     
@@ -46,12 +47,6 @@ export interface DownloadRouter {
     
 }
 
-const getRouters = (function() {
-    let routes: DownloadRouter[] | null = null;
-    return function(): DownloadRouter[] {
-        return routes || (routes = JSON.parse(localStorage.routes));
-    };
-})();
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     const router = getRouters()
@@ -60,6 +55,11 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
         const {path, conflictAction} = router.route(downloadItem);
         suggest({filename: path.toString(), conflictAction});
     }
+    
+    const actions: DownloadAction[] = getRouters()
+        .filter(router => router.test(downloadItem))
+        .map(router => router.route(downloadItem));
+    
 });
 
 interface RouterOptions<T> {
@@ -82,17 +82,17 @@ interface DownloadRouterConstructor<T> {
 
 interface DownloadRouterConstructors {
     
-    byEnabled: DownloadRouterConstructor<DownloadItem>;
+    enabled: DownloadRouterConstructor<DownloadItem>;
     
-    byPath: DownloadRouterConstructor<Path>;
+    path: DownloadRouterConstructor<Path>;
     
-    byFilename: DownloadRouterConstructor<string>;
+    filename: DownloadRouterConstructor<string>;
     
-    byExtension: DownloadRouterConstructor<string>;
+    extension: DownloadRouterConstructor<string>;
     
-    byFileSize: DownloadRouterConstructor<number>;
+    fileSize: DownloadRouterConstructor<number>;
     
-    byUrl: DownloadRouterConstructor<URL>;
+    url: DownloadRouterConstructor<URL>;
     
 }
 
@@ -121,12 +121,12 @@ const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructo
     const byUrl = byEnabled.map(download => new URL(download.url));
     
     return {
-        byEnabled,
-        byPath,
-        byFilename,
-        byExtension,
-        byFileSize,
-        byUrl,
+        enabled: byEnabled,
+        path: byPath,
+        filename: byFilename,
+        extension: byExtension,
+        fileSize: byFileSize,
+        url: byUrl,
     };
     
 })();
@@ -135,11 +135,15 @@ const regexTest = function(regex: RegExp): Test<string> {
     return s => regex.test(s);
 };
 
-DownloadRouter.byUrl.map(url => url.origin)({
-    enabled: true,
-    test: /google/.boundTest(),
-    route: download => ({
-        path: Path.of(""),
-        conflictAction: "overwrite",
-    }),
-});
+export const f = function(): void {
+    const router = DownloadRouter.url.map(url => url.hash)({
+        enabled: true,
+        test: /google/.boundTest(),
+        route: download => ({
+            path: Path.of(""),
+            conflictAction: "overwrite",
+        }),
+    });
+    
+    console.log(router);
+};

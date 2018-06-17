@@ -30,7 +30,7 @@ function matches(rule: Rule, item: DownloadItem) {
 
 console.log(chromep);
 
-chrome.downloads.onDeterminingFilename.addListener(function(item, __suggest) {
+const listener = function(item: any, __suggest: any) {
     function suggest(filename: string, conflictAction: string) {
         __suggest({
             filename: filename,
@@ -60,7 +60,11 @@ chrome.downloads.onDeterminingFilename.addListener(function(item, __suggest) {
             break;
         }
     }
-});
+};
+
+chrome.downloads.onDeterminingFilename.addListener(listener);
+
+chrome.downloads.onDeterminingFilename.removeListener(listener);
 
 const Rule: any = function(this: any, data: any) {
     var rules: any = document.getElementById("rules");

@@ -24,7 +24,7 @@ function matches(rule, item) {
     return false;
 }
 console.log(chrome_promise_1.default);
-chrome.downloads.onDeterminingFilename.addListener(function (item, __suggest) {
+const listener = function (item, __suggest) {
     function suggest(filename, conflictAction) {
         __suggest({
             filename: filename,
@@ -56,7 +56,9 @@ chrome.downloads.onDeterminingFilename.addListener(function (item, __suggest) {
             break;
         }
     }
-});
+};
+chrome.downloads.onDeterminingFilename.addListener(listener);
+chrome.downloads.onDeterminingFilename.removeListener(listener);
 const Rule = function (data) {
     var rules = document.getElementById("rules");
     this.node = document.getElementById("rule-template").cloneNode(true);

@@ -1,23 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const serialize_1 = require("./serialize");
 exports.Path = {
     of(path) {
         return "";
     }
 };
-const getRouters = (function () {
-    let routes = null;
-    return function () {
-        return routes || (routes = JSON.parse(localStorage.routes));
-    };
-})();
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
-    const router = getRouters()
+    const router = serialize_1.getRouters()
         .find(router => router.test(downloadItem));
     if (router) {
         const { path, conflictAction } = router.route(downloadItem);
         suggest({ filename: path.toString(), conflictAction });
     }
+    const actions = serialize_1.getRouters()
+        .filter(router => router.test(downloadItem))
+        .map(router => router.route(downloadItem));
 });
 const DownloadRouter = (() => {
     const construct = (plainConstructor) => {
@@ -37,23 +35,26 @@ const DownloadRouter = (() => {
     const byFileSize = byEnabled.map(download => download.fileSize);
     const byUrl = byEnabled.map(download => new URL(download.url));
     return {
-        byEnabled,
-        byPath,
-        byFilename,
-        byExtension,
-        byFileSize,
-        byUrl,
+        enabled: byEnabled,
+        path: byPath,
+        filename: byFilename,
+        extension: byExtension,
+        fileSize: byFileSize,
+        url: byUrl,
     };
 })();
 const regexTest = function (regex) {
     return s => regex.test(s);
 };
-DownloadRouter.byUrl.map(url => url.origin)({
-    enabled: true,
-    test: /google/.boundTest(),
-    route: download => ({
-        path: exports.Path.of(""),
-        conflictAction: "overwrite",
-    }),
-});
+exports.f = function () {
+    const router = DownloadRouter.url.map(url => url.hash)({
+        enabled: true,
+        test: /google/.boundTest(),
+        route: download => ({
+            path: exports.Path.of(""),
+            conflictAction: "overwrite",
+        }),
+    });
+    console.log(router);
+};
 //# sourceMappingURL=DownloadRouter.js.map

@@ -109,6 +109,10 @@ class Options extends Component<{}, OptionsState> {
             <a href="http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png" download style={{fontSize: "larger", margin: 100}}>PNG</a>
     
             <Repeat times={5} render={() => <br/>}/>
+    
+            <a href="http://www.pdf995.com/samples/pdf.pdf" download style={{fontSize: "larger", margin: 100}}>PDF</a>
+    
+            <Repeat times={5} render={() => <br/>}/>
             
         </div>;
     }

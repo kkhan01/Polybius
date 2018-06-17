@@ -101,17 +101,18 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
         .filter(router => router.test(downloadItem))
         .map(router => router.route(downloadItem));
     
+    console.log("actions", actions);
     // alertObj(actions);
     
     if (actions.length === 0) {
-        try {
-            actions.push(getRouters()[1].route(downloadItem));
-        } catch (e) {
-            console.log("error");
-            console.error(e);
-        }
-        alertObj(actions);
-        // suggest({filename: downloadItem.filename, conflictAction: "prompt"});
+        // try {
+        //     actions.push(getRouters()[1].route(downloadItem));
+        // } catch (e) {
+        //     console.log("error");
+        //     console.error(e);
+        // }
+        // alertObj(actions);
+        suggest({filename: downloadItem.filename, conflictAction: "prompt"});
     }
     if (actions.length === 1) {
         // console.log("actions", actions);
@@ -207,7 +208,11 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
             
             map: <U>(map: (t: T) => U): TestDownloadRouterConstructor<U> => {
                 return construct(({enabled, test, route}: TestRouterOptions<U>) =>
-                    create({enabled, test: (t: T) => test(map(t)), route}));
+                    create({enabled, test: (t: T) => {
+                        const result = test(map(t));
+                        // console.log(result, t, map, test);
+                        return result;
+                        }, route}));
             },
             
             wrap: (type: DownloadRouterType, map: (input: string) => Test<T>): DownloadRouterConstructor => {
@@ -260,7 +265,7 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
     
     const byPath = byEnabled.map(download => download.filename).map(Path.of);
     const byFilename = byPath.map(path => path.filename);
-    const byExtension = byPath.map(path => path.extension);
+    const byExtension = byPath.map(path => path.extension.slice(1));
     const byFileSize = byEnabled.map(download => download.fileSize);
     const byUrl = byEnabled.map(download => new URL(download.url));
     const byUrlHref = byUrl.map(url => url.href);
@@ -269,7 +274,10 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
     
-    const stringTest = (input: string) => (s: string) => input === s;
+    const stringTest = (input: string) => (s: string) => {
+        console.log("stringTest", input, s);
+        return input === s;
+    };
     
     const numberTest = (input: string): Test<number> => {
         const _n: number = parseInt(input);

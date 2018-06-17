@@ -111,5 +111,6 @@ exports.f = function () {
         route: exports.Path.of("path"),
     });
     console.log(router);
+    serialize_1.setRouterOptions([router.options]);
 };
 //# sourceMappingURL=DownloadRouter.js.map

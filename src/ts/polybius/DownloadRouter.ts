@@ -1,7 +1,7 @@
 import * as pathLib from "path";
 import {separateFunctionName} from "../util/utils";
 import {renderPrompt} from "./Prompt";
-import {getRouters} from "./serialize";
+import {getRouters, setRouterOptions} from "./serialize";
 import DownloadItem = chrome.downloads.DownloadItem;
 
 export interface Path {
@@ -270,4 +270,6 @@ export const f = function(): void {
     });
     
     console.log(router);
+    
+    setRouterOptions([router.options]);
 };

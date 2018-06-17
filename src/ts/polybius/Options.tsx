@@ -2,25 +2,28 @@ import * as React from "react";
 import {Component, ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
 import {anyWindow} from "../util/anyWindow";
-import {Path} from "./DownloadRouter";
+import {DownloadRouter, RouterOptions} from "./DownloadRouter";
+import {getRouterOptions} from "./serialize";
 
 
-export interface RouterOptions {
-    
-    destination: Path;
-    
-    filename?: string;
-    
-    extension?: string;
-    
-}
+// export interface RouterOptions {
+//
+//     destination: Path;
+//
+//     filename?: string;
+//
+//     extension?: string;
+//
+// }
 
 
-const Option: SFC<{option: RouterOptions}> = ({option: {destination, filename, extension}}) => {
+const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
+    const {displayName} = DownloadRouter[type];
     return <tr>
-        <td>{destination}</td>
-        {filename ? <td>{filename}</td> : ""}
-        {extension ? <td>{extension}</td> : ""}
+        <td>{displayName}</td>
+        <td>{test}</td>
+        <td>{route.toString()}</td>
+        <td>{enabled}</td>
     </tr>;
 };
 
@@ -40,22 +43,22 @@ interface OptionsState {
 
 class Options extends Component<{}, OptionsState> {
     
-    private readonly options: RouterOptions[];
+    private readonly options: RouterOptions[] = getRouterOptions();
     
     public constructor(props: {}) {
         super(props);
-        this.options = [];
     }
     
     public render(): ReactNode {
         return <div>
             <table>
                 <tr>
-                    <td>Destination</td>
-                    <td>Filename</td>
-                    <td>Extension</td>
+                    <td>Type</td>
+                    <td>Test</td>
+                    <td>Destination Directory</td>
+                    <td>Enabled</td>
                 </tr>
-                <ExistingOptions options={this.state.options}/>
+                <ExistingOptions options={this.options}/>
                 <tr>
                     <td><input type="text" name="destination" value="~/"/></td>
                     <td><input type="text" name="firstname" value=""/></td>

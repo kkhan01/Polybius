@@ -1,12 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const pathLib = require("path");
 const utils_1 = require("../util/utils");
 const Prompt_1 = require("./Prompt");
 const serialize_1 = require("./serialize");
 exports.Path = {
     of(path) {
-        return "";
-    }
+        const { root, dir, base, name, ext } = pathLib.parse(path);
+        return {
+            fullFilename: base,
+            filename: name,
+            extension: ext,
+            append: (newPath) => exports.Path.of(pathLib.resolve(path, newPath.toString())),
+            absolute: () => exports.Path.of(pathLib.resolve(path)),
+            toString: () => path,
+        };
+    },
 };
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     const select = ({ path, conflictAction }) => {
@@ -40,7 +49,14 @@ exports.DownloadRouter = (() => {
                                 ...options,
                                 type: type,
                             },
-                            ...create({ enabled, test: map(test), route }),
+                            ...create({
+                                enabled,
+                                test: map(test),
+                                route: download => ({
+                                    path: route.append(exports.Path.of(download.filename).fullFilename),
+                                    conflictAction: "prompt",
+                                }),
+                            }),
                         };
                     },
                     displayName: utils_1.separateFunctionName(type),
@@ -92,10 +108,7 @@ exports.f = function () {
     const router = exports.DownloadRouter.urlHash.create({
         enabled: true,
         test: "google",
-        route: download => ({
-            path: exports.Path.of(""),
-            conflictAction: "overwrite",
-        }),
+        route: exports.Path.of("path"),
     });
     console.log(router);
 };

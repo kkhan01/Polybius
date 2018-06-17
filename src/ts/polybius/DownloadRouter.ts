@@ -1,3 +1,4 @@
+import * as pathLib from "path";
 import {separateFunctionName} from "../util/utils";
 import {renderPrompt} from "./Prompt";
 import {getRouters} from "./serialize";
@@ -9,6 +10,12 @@ export interface Path {
     
     readonly extension: string;
     
+    readonly fullFilename: string;
+    
+    append(path: Path): Path;
+    
+    append(path: string): Path;
+    
     absolute(): Path;
     
     toString(): string;
@@ -16,9 +23,20 @@ export interface Path {
 }
 
 export const Path = {
+    
     of(path: string): Path {
-        return "" as any as Path;
-    }
+        const {root, dir, base, name, ext} = pathLib.parse(path);
+        
+        return {
+            fullFilename: base,
+            filename: name,
+            extension: ext,
+            append: (newPath: Path | string) => Path.of(pathLib.resolve(path, newPath.toString())),
+            absolute: () => Path.of(pathLib.resolve(path)),
+            toString: () => path,
+        };
+    },
+    
 };
 
 export interface DownloadAction {
@@ -88,7 +106,7 @@ export interface UnTypedRouterOptions {
     
     readonly test: string;
     
-    readonly route: DownloadRoute;
+    readonly route: Path;
     
 }
 
@@ -173,7 +191,14 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
                                 ...options,
                                 type: type,
                             },
-                            ...create({enabled, test: map(test), route}),
+                            ...create({
+                                enabled,
+                                test: map(test),
+                                route: download => ({
+                                    path: route.append(Path.of(download.filename).fullFilename),
+                                    conflictAction: "prompt",
+                                }),
+                            }),
                         };
                     },
                     
@@ -241,10 +266,7 @@ export const f = function(): void {
     const router = DownloadRouter.urlHash.create({
         enabled: true,
         test: "google",
-        route: download => ({
-            path: Path.of(""),
-            conflictAction: "overwrite",
-        }),
+        route: Path.of("path"),
     });
     
     console.log(router);

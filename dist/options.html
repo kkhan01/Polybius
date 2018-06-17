@@ -1,0 +1,6 @@
+<!DOCTYPE html><html lang=en-US><meta charset=UTF-8><title>Download Filename Controller</title><link href=../src/css/materialize.min.css media=screen,projection rel=stylesheet><table id=rules></table><button id=new>New Rule</button><table hidden><tr hidden id=rule-template><td class=nowrap><button class=move-up>↑</button><button class=move-down>↓</button><td><select class=matcher><option value=hostname>Hostname<option value=url-regex>URL RegExp<option value=default>Default Filename<option value=default-regex>Default Filename RegExp<option value=js>Javascript</select><input class=match-param><select class=action><option value=overwrite>Overwrite default filename<option value=prompt>Prompt if default filename exists<option value=js>Javascript</select><textarea class=action-js cols=83 rows=5>console.log(item.url)
+console.log(item.filename)
+// http://developer.chrome.com/extensions/downloads.html#type-DownloadItem
+// http://developer.chrome.com/extensions/downloads.html#type-FilenameConflictAction
+suggest('hello.txt', 'overwrite')
+          </textarea><td><span class=nowrap><input class=enabled checked type=checkbox><label class=enabled-label>Enabled</label></span><button class=remove>Remove</button></table><script src=Polybius.js></script>

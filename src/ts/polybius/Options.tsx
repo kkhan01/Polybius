@@ -2,59 +2,60 @@ import * as React from "react";
 import {Component, ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
 import {anyWindow} from "../util/anyWindow";
-import {DownloadRouter, RouterOptions} from "./DownloadRouter";
+import {createNotNullRef, NotNullRef} from "../util/refs/NotNullRef";
+import {DownloadRouter, DownloadRouterType, RouterOptions, Routers} from "./DownloadRouter";
 import {getRouterOptions} from "./serialize";
 
-
-// export interface RouterOptions {
-//
-//     destination: Path;
-//
-//     filename?: string;
-//
-//     extension?: string;
-//
-// }
-
-
-const RouterTypes: SFC<{}> = props => {
-    return <div></div>;
+const RouterTypesDropdown: SFC<{current: DownloadRouterType}> = ({current}) => {
+    
+    const ref: NotNullRef<HTMLDivElement> = createNotNullRef();
+    
+    return <div className="dropdown">
+        <button onClick={() => ref.current.classList.toggle("show")}
+                className="dropbtn">
+            Dropdown
+        </button>
+        <div id="myDropdown" className="dropdown-content" ref={ref}>
+            {Routers.map(({type, displayName}) =>
+                <option key={type} value={displayName} selected={current === type}/>)
+            }
+        </div>
+    </div>;
 };
 
 
 const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
     const {displayName} = DownloadRouter[type];
     return <table>
-		<thead>
-			<tr>
-			<th>{displayName}</th>
-              		<th>{test}</th>
-              		<th>{route.toString()}</th>
-			<th>{enabled}</th>
-          		</tr>
-        	</thead>
-
-        	<tbody>
-			<tr>
-				<td>
-				<input placeholder="Placeholder" id="type" type="text" class="validate">
-          			<label for="type"></label>
-				</td>
-            		<td>
-			<input placeholder="Placeholder" id="test" type="text" class="validate">
-          			<label for="test"></label>
-			</td>
-            		<td>
-			<input placeholder="Placeholder" id="destdir" type="text" class="validate">
-          			<label for="destdir"></label>
-			</td>
-			<td>
-			<input placeholder="Placeholder" id="enabled" type="text" class="validate">
-          			<label for="enabled"></label>
-			</td>
-          		</tr>
-		</tbody>
-    	</table>
+        <thead>
+            <tr>
+                <th>{displayName}</th>
+                <th>{test}</th>
+                <th>{route.toString()}</th>
+                <th>{enabled}</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr>
+                <td>
+                    <RouterTypesDropdown current={type}/>
+                </td>
+                <td>
+                    <input value={test} id="test" type="text" className="validate"/>
+                    <label htmlFor="test"/>
+                </td>
+                <td>
+                    <input value={route.toString()} id="destdir" type="text" className="validate"/>
+                    <label htmlFor="destdir"/>
+                </td>
+                <td>
+                    <input value={enabled.toString()} id="enabled" type="text" className="validate"/>
+                    <label htmlFor="enabled"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>;
 };
 
 

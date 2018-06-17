@@ -7,8 +7,8 @@ import {addExtensions} from "./util/extensions/allExtensions";
 const main = function(): void {
     addExtensions();
     loadExample();
-    reactMain();
     f();
+    reactMain();
 };
 
 main();

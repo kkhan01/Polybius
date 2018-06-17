@@ -1,4 +1,4 @@
-import * as pathLib from "path";
+const pathLib = require("path-browserify");
 import {separateFunctionName} from "../util/utils";
 import {renderPrompt} from "./Prompt";
 import {getRouters, setRouterOptions} from "./serialize";
@@ -257,19 +257,36 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
     
 })();
 
+export const Routers: DownloadRouterConstructor[] = Object.values(DownloadRouter);
+
+export const routerTypeNames: string[] = Routers.map(({displayName}) => displayName);
+
 const regexTest = function(regex: RegExp): Test<string> {
     return s => regex.test(s);
 };
 
 
 export const f = function(): void {
-    const router = DownloadRouter.urlHash.create({
-        enabled: true,
-        test: "google",
-        route: Path.of("path"),
-    });
-    
-    console.log(router);
-    
-    setRouterOptions([router.options]);
+    setRouterOptions([
+        DownloadRouter.urlHash.create({
+            enabled: true,
+            test: "google",
+            route: Path.of("path"),
+        }),
+        DownloadRouter.extension.create({
+            enabled: true,
+            test: "png",
+            route: Path.of("~/Desktop/pngs"),
+        }),
+        DownloadRouter.extension.create({
+            enabled: true,
+            test: "pdf",
+            route: Path.of("~/Desktop/pdfs"),
+        }),
+        DownloadRouter.filename.create({
+            enabled: true,
+            test: "logo",
+            route: Path.of("~/Desktop/logos"),
+        }),
+    ].map(router => router.options));
 };

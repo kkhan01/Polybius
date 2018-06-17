@@ -4,27 +4,37 @@ const React = require("react");
 const react_1 = require("react");
 const ReactDOM = require("react-dom");
 const anyWindow_1 = require("../util/anyWindow");
+const NotNullRef_1 = require("../util/refs/NotNullRef");
 const DownloadRouter_1 = require("./DownloadRouter");
 const serialize_1 = require("./serialize");
-// export interface RouterOptions {
-//
-//     destination: Path;
-//
-//     filename?: string;
-//
-//     extension?: string;
-//
-// }
-const RouterTypes = props => {
-    return React.createElement("div", null);
+const RouterTypesDropdown = ({ current }) => {
+    const ref = NotNullRef_1.createNotNullRef();
+    return React.createElement("div", { className: "dropdown" },
+        React.createElement("button", { onClick: () => ref.current.classList.toggle("show"), className: "dropbtn" }, "Dropdown"),
+        React.createElement("div", { id: "myDropdown", className: "dropdown-content", ref: ref }, DownloadRouter_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: displayName, selected: current === type }))));
 };
 const Option = ({ option: { enabled, test, route, type } }) => {
     const { displayName } = DownloadRouter_1.DownloadRouter[type];
-    return React.createElement("tr", null,
-        React.createElement("td", null, displayName),
-        React.createElement("td", null, test),
-        React.createElement("td", null, route.toString()),
-        React.createElement("td", null, enabled));
+    return React.createElement("table", null,
+        React.createElement("thead", null,
+            React.createElement("tr", null,
+                React.createElement("th", null, displayName),
+                React.createElement("th", null, test),
+                React.createElement("th", null, route.toString()),
+                React.createElement("th", null, enabled))),
+        React.createElement("tbody", null,
+            React.createElement("tr", null,
+                React.createElement("td", null,
+                    React.createElement(RouterTypesDropdown, { current: type })),
+                React.createElement("td", null,
+                    React.createElement("input", { value: test, id: "test", type: "text", className: "validate" }),
+                    React.createElement("label", { htmlFor: "test" })),
+                React.createElement("td", null,
+                    React.createElement("input", { value: route.toString(), id: "destdir", type: "text", className: "validate" }),
+                    React.createElement("label", { htmlFor: "destdir" })),
+                React.createElement("td", null,
+                    React.createElement("input", { value: enabled.toString(), id: "enabled", type: "text", className: "validate" }),
+                    React.createElement("label", { htmlFor: "enabled" })))));
 };
 const ExistingOptions = ({ options }) => {
     return React.createElement("div", null, options.map((option, i) => React.createElement(Option, { key: i, option: option })));

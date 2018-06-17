@@ -7,8 +7,8 @@ const allExtensions_1 = require("./util/extensions/allExtensions");
 const main = function () {
     allExtensions_1.addExtensions();
     example_1.loadExample();
-    Options_1.reactMain();
     DownloadRouter_1.f();
+    Options_1.reactMain();
 };
 main();
 //# sourceMappingURL=Polybius.js.map

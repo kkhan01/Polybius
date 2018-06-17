@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const pathLib = require("path");
+const pathLib = require("path-browserify");
 const utils_1 = require("../util/utils");
 const Prompt_1 = require("./Prompt");
 const serialize_1 = require("./serialize");
@@ -101,16 +101,33 @@ exports.DownloadRouter = (() => {
         urlHash: byUrlHash.wrap("urlHash", stringTest),
     };
 })();
+exports.Routers = Object.values(exports.DownloadRouter);
+exports.routerTypeNames = exports.Routers.map(({ displayName }) => displayName);
 const regexTest = function (regex) {
     return s => regex.test(s);
 };
 exports.f = function () {
-    const router = exports.DownloadRouter.urlHash.create({
-        enabled: true,
-        test: "google",
-        route: exports.Path.of("path"),
-    });
-    console.log(router);
-    serialize_1.setRouterOptions([router.options]);
+    serialize_1.setRouterOptions([
+        exports.DownloadRouter.urlHash.create({
+            enabled: true,
+            test: "google",
+            route: exports.Path.of("path"),
+        }),
+        exports.DownloadRouter.extension.create({
+            enabled: true,
+            test: "png",
+            route: exports.Path.of("~/Desktop/pngs"),
+        }),
+        exports.DownloadRouter.extension.create({
+            enabled: true,
+            test: "pdf",
+            route: exports.Path.of("~/Desktop/pdfs"),
+        }),
+        exports.DownloadRouter.filename.create({
+            enabled: true,
+            test: "logo",
+            route: exports.Path.of("~/Desktop/logos"),
+        }),
+    ].map(router => router.options));
 };
 //# sourceMappingURL=DownloadRouter.js.map

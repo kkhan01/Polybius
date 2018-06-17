@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const utils_1 = require("../util/utils");
 const Prompt_1 = require("./Prompt");
 const serialize_1 = require("./serialize");
 exports.Path = {
@@ -23,15 +24,29 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     Prompt_1.renderPrompt(actions, select);
 });
 exports.DownloadRouter = (() => {
-    const construct = (plainConstructor) => {
-        const constructor = plainConstructor;
-        constructor.map = (map) => {
-            return construct(({ enabled, test, route }) => constructor({ enabled, test: (t) => test(map(t)), route }));
+    const construct = (create) => {
+        return {
+            create,
+            map: (map) => {
+                return construct(({ enabled, test, route }) => create({ enabled, test: (t) => test(map(t)), route }));
+            },
+            wrap: (type, map) => {
+                return {
+                    type,
+                    create: (options) => {
+                        const { enabled, test, route } = options;
+                        return {
+                            options: {
+                                ...options,
+                                type: type,
+                            },
+                            ...create({ enabled, test: map(test), route }),
+                        };
+                    },
+                    displayName: utils_1.separateFunctionName(type),
+                };
+            },
         };
-        constructor.wrap = (map) => {
-            return ({ enabled, test, route }) => constructor({ enabled, test: map(test), route });
-        };
-        return constructor;
     };
     const byEnabled = construct(({ enabled, test, route }) => ({
         test: (download) => enabled && test(download),
@@ -47,37 +62,34 @@ exports.DownloadRouter = (() => {
     const byUrlHost = byUrl.map(url => url.host);
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
-    const inputStringMap = (input) => (s) => input === s;
-    const parseFunction = (functionBody) => {
-        return {};
-    };
-    const numberFunctionMap = (input) => {
+    const stringTest = (input) => (s) => input === s;
+    const numberTest = (input) => {
         const _n = parseInt(input);
         return n => _n === n;
     };
-    const inputFunctionMap = (input) => parseFunction(input);
+    const parseFunction = (functionBody) => {
+        return {};
+    };
+    const functionTest = (input) => parseFunction(input);
     return {
-        download: byEnabled.wrap(inputFunctionMap),
-        path: byPath.wrap(inputFunctionMap),
-        filename: byFilename.wrap(inputStringMap),
-        extension: byExtension.wrap(inputStringMap),
-        fileSize: byFileSize.wrap(numberFunctionMap),
-        url: byUrl.wrap(inputFunctionMap),
-        urlHref: byUrlHref.wrap(inputStringMap),
-        urlProtocol: byUrlProtocol.wrap(inputStringMap),
-        urlHost: byUrlHost.wrap(inputStringMap),
-        urlPath: byUrlPath.wrap(inputStringMap),
-        urlHash: byUrlHash.wrap(inputStringMap),
+        download: byEnabled.wrap("download", functionTest),
+        path: byPath.wrap("path", functionTest),
+        filename: byFilename.wrap("filename", stringTest),
+        extension: byExtension.wrap("extension", stringTest),
+        fileSize: byFileSize.wrap("fileSize", numberTest),
+        url: byUrl.wrap("url", functionTest),
+        urlHref: byUrlHref.wrap("urlHref", stringTest),
+        urlProtocol: byUrlProtocol.wrap("urlProtocol", stringTest),
+        urlHost: byUrlHost.wrap("urlHost", stringTest),
+        urlPath: byUrlPath.wrap("urlPath", stringTest),
+        urlHash: byUrlHash.wrap("urlHash", stringTest),
     };
 })();
-// const _DownloadRouter: StringDownloadRouterConstructors = (() => {
-//
-// })();
 const regexTest = function (regex) {
     return s => regex.test(s);
 };
 exports.f = function () {
-    const router = exports.DownloadRouter.urlHash({
+    const router = exports.DownloadRouter.urlHash.create({
         enabled: true,
         test: "google",
         route: download => ({

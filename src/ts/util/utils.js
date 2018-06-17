@@ -31,6 +31,10 @@ exports.joinWords = function (words) {
 exports.separateClassName = function (className) {
     return className.replace(/([A-Z])/g, " $1").trim();
 };
+exports.separateFunctionName = function (functionName) {
+    const [first, ...rest] = exports.separateClassName(functionName).split(" ");
+    return [exports.capitalize(first), ...rest].join(" ");
+};
 exports.joinNodes = function (nodes, node) {
     if (nodes.length < 2) {
         return nodes;

@@ -1,13 +1,13 @@
 import {cache} from "../util/cache";
-import {DownloadRouter, SavedRouterOptions} from "./DownloadRouter";
-import {RouterOptions} from "./DownloadRouter";
+import {DownloadRouter, RouterOptions} from "./DownloadRouter";
 
-const getSavedRouterOptions = cache(() => JSON.parse(localStorage.routerOptions) as SavedRouterOptions[]);
-
-export const getRouterOptions = () => getSavedRouterOptions() as RouterOptions[];
+const getRouterOptions = cache(() => JSON.parse(localStorage.routerOptions) as RouterOptions[]);
 
 export const getRouters = cache(() => {
-    return getSavedRouterOptions().map((options) => {
-        return DownloadRouter[options.type](options);
-    }) as DownloadRouter[];
+    return getRouterOptions()
+        .map(options => DownloadRouter[options.type].create(options)) as DownloadRouter[];
 });
+
+export const setRouterOptions = function(options: RouterOptions[]): void {
+    localStorage.routerOptions = JSON.stringify(options);
+};

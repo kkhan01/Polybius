@@ -2,11 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const cache_1 = require("../util/cache");
 const DownloadRouter_1 = require("./DownloadRouter");
-const getSavedRouterOptions = cache_1.cache(() => JSON.parse(localStorage.routerOptions));
-exports.getRouterOptions = () => getSavedRouterOptions();
+const getRouterOptions = cache_1.cache(() => JSON.parse(localStorage.routerOptions));
 exports.getRouters = cache_1.cache(() => {
-    return getSavedRouterOptions().map((options) => {
-        return DownloadRouter_1.DownloadRouter[options.type](options);
-    });
+    return getRouterOptions()
+        .map(options => DownloadRouter_1.DownloadRouter[options.type].create(options));
 });
+exports.setRouterOptions = function (options) {
+    localStorage.routerOptions = JSON.stringify(options);
+};
 //# sourceMappingURL=serialize.js.map

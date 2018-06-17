@@ -37,6 +37,11 @@ export const separateClassName = function(className: string): string {
     return className.replace(/([A-Z])/g, " $1").trim();
 };
 
+export const separateFunctionName = function(functionName: string): string {
+    const [first, ...rest] = separateClassName(functionName).split(" ");
+    return [capitalize(first), ...rest].join(" ");
+};
+
 export const joinNodes = function(nodes: ReactNode[], node: ReactNode): ReactNode[] {
     if (nodes.length < 2) {
         return nodes;

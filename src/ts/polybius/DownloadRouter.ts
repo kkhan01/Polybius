@@ -1,3 +1,4 @@
+import {separateFunctionName} from "../util/utils";
 import {renderPrompt} from "./Prompt";
 import {getRouters} from "./serialize";
 import DownloadItem = chrome.downloads.DownloadItem;
@@ -40,11 +41,16 @@ export interface DownloadRoute {
     
 }
 
-export interface DownloadRouter {
+interface OptionLessDownloadRouter {
     
-    test: Test<DownloadItem>;
+    readonly test: Test<DownloadItem>;
     
     readonly route: DownloadRoute;
+}
+
+export interface DownloadRouter extends OptionLessDownloadRouter {
+    
+    readonly options: RouterOptions;
     
 }
 
@@ -76,7 +82,7 @@ interface TestRouterOptions<T> {
     
 }
 
-export interface RouterOptions {
+export interface UnTypedRouterOptions {
     
     readonly enabled: boolean;
     
@@ -88,17 +94,21 @@ export interface RouterOptions {
 
 interface TestDownloadRouterConstructor<T = string> {
     
-    (options: TestRouterOptions<T>): DownloadRouter;
+    create: (options: TestRouterOptions<T>) => OptionLessDownloadRouter;
     
     map<U>(map: (t: T) => U): TestDownloadRouterConstructor<U>;
     
-    wrap(map: (input: string) => Test<T>): DownloadRouterConstructor;
+    wrap(type: DownloadRouterType, map: (input: string) => Test<T>): DownloadRouterConstructor;
     
 }
 
 interface DownloadRouterConstructor {
     
-    (options: RouterOptions): DownloadRouter;
+    type: DownloadRouterType;
+    
+    create: (options: UnTypedRouterOptions) => DownloadRouter;
+    
+    displayName: string;
     
 }
 
@@ -133,7 +143,7 @@ interface DownloadRouterConstructors extends DownloadRouterConstructorMap {
 export type DownloadRouterType = keyof DownloadRouterConstructors;
 
 
-export interface SavedRouterOptions extends RouterOptions {
+export interface RouterOptions extends UnTypedRouterOptions {
     
     readonly type: DownloadRouterType;
     
@@ -141,17 +151,38 @@ export interface SavedRouterOptions extends RouterOptions {
 
 export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterConstructors => {
     
-    const construct = <T>(plainConstructor: (options: TestRouterOptions<T>) => DownloadRouter): TestDownloadRouterConstructor<T> => {
-        const constructor = plainConstructor as TestDownloadRouterConstructor<T>;
-        constructor.map = <U>(map: (t: T) => U): TestDownloadRouterConstructor<U> => {
-            return construct(({enabled, test, route}: TestRouterOptions<U>) =>
-                constructor({enabled, test: (t: T) => test(map(t)), route}));
+    const construct = <T>(create: (options: TestRouterOptions<T>) => OptionLessDownloadRouter): TestDownloadRouterConstructor<T> => {
+        return {
+            
+            create,
+            
+            map: <U>(map: (t: T) => U): TestDownloadRouterConstructor<U> => {
+                return construct(({enabled, test, route}: TestRouterOptions<U>) =>
+                    create({enabled, test: (t: T) => test(map(t)), route}));
+            },
+            
+            wrap: (type: DownloadRouterType, map: (input: string) => Test<T>): DownloadRouterConstructor => {
+                return {
+                    
+                    type,
+                    
+                    create: (options): DownloadRouter => {
+                        const {enabled, test, route} = options;
+                        return {
+                            options: {
+                                ...options,
+                                type: type,
+                            },
+                            ...create({enabled, test: map(test), route}),
+                        };
+                    },
+                    
+                    displayName: separateFunctionName(type as string),
+                    
+                };
+            },
+            
         };
-        constructor.wrap = (map: (input: string) => Test<T>): DownloadRouterConstructor => {
-            return ({enabled, test, route}) =>
-                constructor({enabled, test: map(test), route});
-        };
-        return constructor;
     };
     
     const byEnabled: TestDownloadRouterConstructor<DownloadItem> = construct(
@@ -172,38 +203,34 @@ export const DownloadRouter: DownloadRouterConstructors = ((): DownloadRouterCon
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
     
-    const inputStringMap = (input: string) => (s: string) => input === s;
+    const stringTest = (input: string) => (s: string) => input === s;
+    
+    const numberTest = (input: string): Test<number> => {
+        const _n: number = parseInt(input);
+        return n => _n === n;
+    };
     
     const parseFunction = <T>(functionBody: string): Test<T> => {
         return {} as any as Test<T>;
     };
     
-    const numberFunctionMap = (input: string): Test<number> => {
-        const _n: number = parseInt(input);
-        return n => _n === n;
-    };
-    
-    const inputFunctionMap = <T>(input: string) => parseFunction(input);
+    const functionTest = <T>(input: string) => parseFunction(input);
     
     return {
-        download: byEnabled.wrap(inputFunctionMap),
-        path: byPath.wrap(inputFunctionMap),
-        filename: byFilename.wrap(inputStringMap),
-        extension: byExtension.wrap(inputStringMap),
-        fileSize: byFileSize.wrap(numberFunctionMap),
-        url: byUrl.wrap(inputFunctionMap),
-        urlHref: byUrlHref.wrap(inputStringMap),
-        urlProtocol: byUrlProtocol.wrap(inputStringMap),
-        urlHost: byUrlHost.wrap(inputStringMap),
-        urlPath: byUrlPath.wrap(inputStringMap),
-        urlHash: byUrlHash.wrap(inputStringMap),
+        download: byEnabled.wrap("download", functionTest),
+        path: byPath.wrap("path", functionTest),
+        filename: byFilename.wrap("filename", stringTest),
+        extension: byExtension.wrap("extension", stringTest),
+        fileSize: byFileSize.wrap("fileSize", numberTest),
+        url: byUrl.wrap("url", functionTest),
+        urlHref: byUrlHref.wrap("urlHref", stringTest),
+        urlProtocol: byUrlProtocol.wrap("urlProtocol", stringTest),
+        urlHost: byUrlHost.wrap("urlHost", stringTest),
+        urlPath: byUrlPath.wrap("urlPath", stringTest),
+        urlHash: byUrlHash.wrap("urlHash", stringTest),
     };
     
 })();
-
-// const _DownloadRouter: StringDownloadRouterConstructors = (() => {
-//
-// })();
 
 const regexTest = function(regex: RegExp): Test<string> {
     return s => regex.test(s);
@@ -211,7 +238,7 @@ const regexTest = function(regex: RegExp): Test<string> {
 
 
 export const f = function(): void {
-    const router = DownloadRouter.urlHash({
+    const router = DownloadRouter.urlHash.create({
         enabled: true,
         test: "google",
         route: download => ({

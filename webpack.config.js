@@ -1,9 +1,5 @@
 const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const WebpackCleanupPlugin = require("webpack-cleanup-plugin");
-const CompressionWebpackPlugin = require("compression-webpack-plugin");
-const fs = require("fs");
 
 const production = true;
 const mode = production ? "production" : "development";
@@ -12,7 +8,7 @@ const htmlPlugin = function(name) {
     return new HtmlWebpackPlugin({
         filename: `${name}.html`,
         template: `./src/html/${name}.html`,
-        hash: false,
+        hash: true,
         cache: true,
         // favicon: "./src/img/favicon.ico",
         showErrors: !production,
@@ -85,17 +81,7 @@ module.exports = {
     //     },
     // },
     plugins: [
-        new CleanWebpackPlugin(["dist"]),
-        new WebpackCleanupPlugin(),
-        // new CompressionWebpackPlugin({
-        //     asset: "[path].gz[query]",
-        //     algorithm: "gzip",
-        //     test: /\.js$|\.css$|\.html$/,
-        //     threshold: 10240,
-        //     minRatio: 0.8,
-        // }),
-        htmlPlugin("popup"),
-        htmlPlugin("options"),
+        ...["popup", "options"].map(htmlPlugin),
     ],
     mode: mode,
 };

@@ -10,6 +10,8 @@ declare interface ObjectConstructor {
     
     defineImmutableProperties(object: any, propertyValues: Object): void;
     
+    getAllPropertyNames(object: any): string[];
+    
     getting<T, K extends keyof T>(key: K): (o: T) => T[K];
     
     deleting<T, K extends keyof T>(key: K): (o: T) => T;
@@ -24,6 +26,9 @@ declare interface Object {
     
     // _ is b/c there are other objects with slightly different clone methods
     _clone<T>(this: T): T;
+    
+    // copies complete property descriptors
+    fullClone<T>(this: T): T;
     
     mapFields<T, U, KT extends keyof T, KU extends keyof U>(this: T, mapper: (field: T[KT]) => U[KU]): U;
     
@@ -42,6 +47,8 @@ declare interface FunctionConstructor {
 declare interface Function {
     
     then<T, U, V>(this: (arg: T) => U, nextFunc: (arg: U) => V): (arg: T) => V;
+    
+    then(this: () => void, nextFunc: () => void): () => void;
     
     applyReturning<T>(this: (arg: T) => void): (arg: T) => T;
     
@@ -87,6 +94,10 @@ declare interface Array<T> {
     
     random<T>(this: T[]): T;
     
+    mapCall<U, T extends () => U>(this: T[]): U[];
+    
+    callEach<T extends () => void>(this: T[]): void;
+    
 }
 
 declare interface NumberConstructor {
@@ -100,6 +111,10 @@ declare interface NumberConstructor {
 declare interface RegExp {
     
     boundTest(): (s: string) => boolean;
+    
+    boundExec(): (s: string) => RegExpExecArray | null;
+    
+    toSource(): string;
     
 }
 

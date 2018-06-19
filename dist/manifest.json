@@ -9,25 +9,25 @@
   "content_security_policy": "script-src 'self'; default-src 'self'",
   "background": {
     "scripts": [
-      "dist/Polybius.js"
+      "Polybius.js"
     ],
     "persistent": false
   },
-  "options_page": "dist/options.html",
+  "options_page": "options.html",
   "page_action": {
-    "default_popup": "dist/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
-      "16": "src/img/logo.png",
-      "32": "src/img/logo.png",
-      "64": "src/img/logo.png",
-      "128": "src/img/logo.png"
+      "16": "logo.png",
+      "32": "logo.png",
+      "64": "logo.png",
+      "128": "logo.png"
     }
   },
   "icons": {
-    "16": "src/img/logo.png",
-    "32": "src/img/logo.png",
-    "48": "src/img/logo.png",
-    "128": "src/img/logo.png"
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
   },
   "manifest_version": 2
 }

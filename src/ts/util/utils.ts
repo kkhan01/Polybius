@@ -80,3 +80,26 @@ export const onlyDigitsInput = function(input: HTMLInputElement): void {
 export const sleep = function(seconds: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 };
+
+const regExpLiteralPattern = /\/([^\/]+)\/([gimuy]*)/;
+
+export const isRegExpLiteral = function(regex: string): boolean {
+    return regExpLiteralPattern.test(regex);
+};
+
+export const parseRegExpLiteral = function(regex: string): RegExp | undefined {
+    const match = regExpLiteralPattern.exec(regex);
+    if (match) {
+        const [, pattern, flags] = match;
+        return new RegExp(pattern, flags);
+    } else {
+        return undefined;
+    }
+};
+
+export const escapeRegExp = function(literal: string, flags?: string): RegExp {
+    return new RegExp(
+        literal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"),
+        flags,
+    );
+};

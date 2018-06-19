@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Test} from "./DownloadRouter";
+import {Test} from "../util/functional/Test";
 
 const dynamicFunction = function(functionBody: string): Test<string> {
     const test: Function = new Function("download", functionBody);

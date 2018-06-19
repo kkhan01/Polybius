@@ -68,4 +68,21 @@ exports.onlyDigitsInput = function (input) {
 exports.sleep = function (seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 };
+const regExpLiteralPattern = /\/([^\/]+)\/([gimuy]*)/;
+exports.isRegExpLiteral = function (regex) {
+    return regExpLiteralPattern.test(regex);
+};
+exports.parseRegExpLiteral = function (regex) {
+    const match = regExpLiteralPattern.exec(regex);
+    if (match) {
+        const [, pattern, flags] = match;
+        return new RegExp(pattern, flags);
+    }
+    else {
+        return undefined;
+    }
+};
+exports.escapeRegExp = function (literal, flags) {
+    return new RegExp(literal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), flags);
+};
 //# sourceMappingURL=utils.js.map

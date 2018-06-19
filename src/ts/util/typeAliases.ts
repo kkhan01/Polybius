@@ -1,0 +1,1 @@
+export type BrowserStorage = Storage;

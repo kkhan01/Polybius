@@ -5,8 +5,8 @@ const react_1 = require("react");
 const ReactDOM = require("react-dom");
 const anyWindow_1 = require("../util/anyWindow");
 const Repeat_1 = require("../util/components/Repeat");
-const DownloadRouter_1 = require("./DownloadRouter");
-const serialize_1 = require("./serialize");
+const Router_1 = require("./Router");
+const Storage_1 = require("./Storage");
 class RouterTypesDropdown extends react_1.Component {
     // private readonly ref: NotNullRef<HTMLDivElement> = createNotNullRef();
     componentDidMount() {
@@ -14,10 +14,10 @@ class RouterTypesDropdown extends react_1.Component {
         // M.Dropdown.init(elements, {});
     }
     render() {
-        return React.createElement("select", { style: { display: "block" } }, DownloadRouter_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: type, selected: this.props.current === type }, displayName)));
+        return React.createElement("select", { style: { display: "block" } }, Router_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: type, selected: this.props.current === type }, displayName)));
     }
 }
-const Option = ({ option: { enabled, test, route, type } }) => {
+const Rule = ({ rule: { enabled, test, route, type } }) => {
     return React.createElement("table", null,
         React.createElement("thead", null,
             React.createElement("tr", null,
@@ -39,19 +39,24 @@ const Option = ({ option: { enabled, test, route, type } }) => {
                     React.createElement("input", { value: enabled.toString(), id: "enabled", type: "text", className: "validate" }),
                     React.createElement("label", { htmlFor: "enabled" })))));
 };
-const ExistingOptions = ({ options }) => {
-    return React.createElement("div", null, options.map((option, i) => React.createElement(Option, { key: i, option: option })));
+const ExistingRules = ({ rules }) => {
+    return React.createElement("div", null, rules.map((rule, i) => React.createElement(Rule, { key: i, rule: rule })));
 };
-class Options extends react_1.Component {
+class Rules extends react_1.Component {
     constructor(props) {
         super(props);
-        this.options = serialize_1.getRouterOptions();
-        console.log(this.options);
+        // not true
+        // noinspection TypeScriptFieldCanBeMadeReadonly
+        this.rules = [];
+        (async () => {
+            this.rules = await Storage_1.storage.routerRules.get();
+            this.forceUpdate();
+        })();
     }
     render() {
         return React.createElement("div", null,
             React.createElement("table", null,
-                React.createElement(ExistingOptions, { options: this.options }),
+                React.createElement(ExistingRules, { rules: this.rules }),
                 React.createElement("tr", null,
                     React.createElement("td", null,
                         React.createElement("input", { type: "text", name: "destination", value: "~/" })),
@@ -71,6 +76,6 @@ class Options extends react_1.Component {
 exports.reactMain = function () {
     const root = document.body.appendDiv();
     anyWindow_1.anyWindow.root = root;
-    ReactDOM.render(React.createElement(Options, null), root);
+    ReactDOM.render(React.createElement(Rules, null), root);
 };
-//# sourceMappingURL=Options.js.map
+//# sourceMappingURL=Rules.js.map

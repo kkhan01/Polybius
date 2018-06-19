@@ -60,7 +60,7 @@ const listener = function (item, __suggest) {
 chrome.downloads.onDeterminingFilename.addListener(listener);
 chrome.downloads.onDeterminingFilename.removeListener(listener);
 const Rule = function (data) {
-    var rules = document.getElementById("rules");
+    var rules = document.getElementById("rule");
     this.node = document.getElementById("rule-template").cloneNode(true);
     this.node.id = "rule" + (Rule.next_id++);
     this.node.rule = this;
@@ -128,7 +128,7 @@ function loadRules() {
     }
 }
 function storeRules() {
-    const rules = document.getElementById("rules");
+    const rules = document.getElementById("rule");
     if (rules) {
         localStorage.rules = JSON.stringify(Array.prototype.slice.apply(rules.childNodes).map(function (node) {
             node.rule.render();
@@ -144,7 +144,7 @@ function storeRules() {
 }
 window.onload = function () {
     loadRules();
-    const addRule = document.getElementById("new");
+    const addRule = document.getElementById("newObject");
     if (addRule) {
         addRule.onclick = function () {
             new Rule();

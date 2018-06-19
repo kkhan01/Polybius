@@ -1,7 +1,7 @@
 const immutableDescriptor: PropertyDescriptor = Object.freeze({
     writable: false,
     enumerable: false,
-    configurable: false,
+    configurable: true,
 });
 
 const defineSharedProperties = function(obj: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object): void {
@@ -40,6 +40,14 @@ Object.defineProperties(Object, {
 
 Object.defineImmutableProperties(Object, {
     
+    getAllPropertyNames(object: any): string[] {
+        const allNames: string[] = [];
+        for (let o = object; o != Object.prototype; o = Object.getPrototypeOf(o)) {
+            allNames.addAll(Object.getOwnPropertyNames(o));
+        }
+        return Array.from(new Set(allNames));
+    },
+    
     getting<T, K extends keyof T>(key: K): (o: T) => T[K] {
         return o => o[key];
     },
@@ -55,16 +63,20 @@ Object.defineImmutableProperties(Object, {
 
 Object.defineImmutableProperties(Object.prototype, {
     
-    freeze() {
+    freeze<T>(this: T): T {
         return Object.freeze(this);
     },
     
-    seal() {
+    seal<T>(this: T): T {
         return Object.seal(this);
     },
     
-    _clone() {
-        return Object.assign({}, this);
+    _clone<T>(this: T): T {
+        return Object.assign(Object.create(null), this);
+    },
+    
+    fullClone<T>(this: T): T {
+        return Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
     },
     
     mapFields<T, U>(this: {[field: string]: T}, mapper: (field: T) => U): {[field: string]: U} {
@@ -215,6 +227,14 @@ Object.defineImmutableProperties(Array.prototype, {
         return this[Math.floor(Math.random() * this.length)];
     },
     
+    mapCall<U, T extends () => U>(this: T[]): U[] {
+        return this.map(f => f());
+    },
+    
+    callEach<T extends () => void>(this: T[]): void {
+        this.forEach(f => f());
+    },
+    
 });
 
 Object.defineImmutableProperties(Number, {
@@ -233,7 +253,16 @@ Object.defineImmutableProperties(RegExp.prototype, {
     
     boundTest(this: RegExp): (s: string) => boolean {
         return s => this.test(s);
-    }
+    },
+    
+    boundExec(this: RegExp): (s: string) => RegExpExecArray | null {
+        return s => this.exec(s);
+    },
+    
+    toSource(this: RegExp): string {
+        const {source, flags} = this;
+        return `/${source}/${flags}`;
+    },
     
 });
 
@@ -307,5 +336,5 @@ Object.defineImmutableProperties(HTMLElement.prototype, {
 });
 
 export const addExtensions = function(): void {
-    
+
 };

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const immutableDescriptor = Object.freeze({
     writable: false,
     enumerable: false,
-    configurable: false,
+    configurable: true,
 });
 const defineSharedProperties = function (obj, sharedDescriptor, propertyValues) {
     const properties = Object.getOwnPropertyDescriptors(propertyValues);
@@ -34,6 +34,13 @@ Object.defineProperties(Object, {
     },
 });
 Object.defineImmutableProperties(Object, {
+    getAllPropertyNames(object) {
+        const allNames = [];
+        for (let o = object; o != Object.prototype; o = Object.getPrototypeOf(o)) {
+            allNames.addAll(Object.getOwnPropertyNames(o));
+        }
+        return Array.from(new Set(allNames));
+    },
     getting(key) {
         return o => o[key];
     },
@@ -52,7 +59,10 @@ Object.defineImmutableProperties(Object.prototype, {
         return Object.seal(this);
     },
     _clone() {
-        return Object.assign({}, this);
+        return Object.assign(Object.create(null), this);
+    },
+    fullClone() {
+        return Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
     },
     mapFields(mapper) {
         const obj = {};
@@ -175,6 +185,12 @@ Object.defineImmutableProperties(Array.prototype, {
     random() {
         return this[Math.floor(Math.random() * this.length)];
     },
+    mapCall() {
+        return this.map(f => f());
+    },
+    callEach() {
+        this.forEach(f => f());
+    },
 });
 Object.defineImmutableProperties(Number, {
     isNumber(n) {
@@ -187,7 +203,14 @@ Object.defineImmutableProperties(Number, {
 Object.defineImmutableProperties(RegExp.prototype, {
     boundTest() {
         return s => this.test(s);
-    }
+    },
+    boundExec() {
+        return s => this.exec(s);
+    },
+    toSource() {
+        const { source, flags } = this;
+        return `/${source}/${flags}`;
+    },
 });
 Object.defineImmutableProperties(Node.prototype, {
     appendBefore(node) {

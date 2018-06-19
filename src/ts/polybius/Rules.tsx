@@ -3,13 +3,13 @@ import {Component, ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
 import {anyWindow} from "../util/anyWindow";
 import {Repeat} from "../util/components/Repeat";
-import {createNotNullRef, NotNullRef} from "../util/refs/NotNullRef";
-import {DownloadRouterType, RouterOptions, Routers} from "./DownloadRouter";
-import {getRouterOptions} from "./serialize";
+import {Routers, RouterType} from "./Router";
+import {RouterRule} from "./RouterRule";
+import {storage} from "./Storage";
 
 interface RouterTypesDropdownProps {
     
-    current: DownloadRouterType;
+    current: RouterType;
     
 }
 
@@ -33,9 +33,7 @@ class RouterTypesDropdown extends Component<RouterTypesDropdownProps, {}> {
 }
 
 
-const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, type}}) => {
-    
-    
+const Rule: SFC<{rule: RouterRule}> = ({rule: {enabled, test, route, type}}) => {
     return <table>
         <thead>
             <tr>
@@ -69,33 +67,38 @@ const Option: SFC<{option: RouterOptions}> = ({option: {enabled, test, route, ty
 };
 
 
-const ExistingOptions: SFC<{options: RouterOptions[]}> = ({options}) => {
+const ExistingRules: SFC<{rules: RouterRule[]}> = ({rules}) => {
     return <div>
-        {options.map((option, i) => <Option key={i} option={option}/>)}
+        {rules.map((rule, i) => <Rule key={i} rule={rule}/>)}
     </div>;
 };
 
-interface OptionsState {
+interface RulesState {
     
-    readonly options: RouterOptions[];
+    readonly rules: RouterRule[];
     
 }
 
 
-class Options extends Component<{}, OptionsState> {
+class Rules extends Component<{}, RulesState> {
     
-    private readonly options: RouterOptions[] = getRouterOptions();
+    // not true
+    // noinspection TypeScriptFieldCanBeMadeReadonly
+    private rules: RouterRule[] = [];
     
     public constructor(props: {}) {
         super(props);
-        console.log(this.options);
+        (async () => {
+            this.rules = await storage.routerRules.get();
+            this.forceUpdate();
+        })();
     }
     
     public render(): ReactNode {
         return <div>
             <table>
-
-                <ExistingOptions options={this.options}/>
+                
+                <ExistingRules rules={this.rules}/>
                 <tr>
                     <td><input type="text" name="destination" value="~/"/></td>
                     <td><input type="text" name="firstname" value=""/></td>
@@ -103,21 +106,22 @@ class Options extends Component<{}, OptionsState> {
                 </tr>
             </table>
             
+            <Repeat times={5} render={() => <br/>}/>
+            
+            <a href="http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png" download
+               style={{fontSize: "larger", margin: 100}}>PNG</a>
             
             <Repeat times={5} render={() => <br/>}/>
             
-            <a href="http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png" download style={{fontSize: "larger", margin: 100}}>PNG</a>
-    
-            <Repeat times={5} render={() => <br/>}/>
-    
             <a href="http://www.pdf995.com/samples/pdf.pdf" download style={{fontSize: "larger", margin: 100}}>PDF</a>
-    
-            <Repeat times={5} render={() => <br/>}/>
-    
-            <a href="https://github.com/kkysen/Polybius/raw/master/src/img/logo.png" download style={{fontSize: "larger", margin: 100}}>Logo</a>
-    
+            
             <Repeat times={5} render={() => <br/>}/>
             
+            <a href="https://github.com/kkysen/Polybius/raw/master/src/img/logo.png" download
+               style={{fontSize: "larger", margin: 100}}>Logo</a>
+            
+            <Repeat times={5} render={() => <br/>}/>
+        
         </div>;
     }
     
@@ -126,5 +130,5 @@ class Options extends Component<{}, OptionsState> {
 export const reactMain = function(): void {
     const root = document.body.appendDiv();
     anyWindow.root = root;
-    ReactDOM.render(<Options/>, root);
+    ReactDOM.render(<Rules/>, root);
 };

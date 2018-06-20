@@ -54,6 +54,7 @@ class Rules extends react_1.Component {
         })();
     }
     render() {
+        // TODO <div> cannot be a child of <table>
         return React.createElement("div", null,
             React.createElement("table", null,
                 React.createElement(ExistingRules, { rules: this.rules }),

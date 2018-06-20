@@ -64,7 +64,7 @@ exports.jsonSerializer = function () {
 };
 exports.StorageItem = {
     newObject(args) {
-        const { storageImpl = Storages_1.Storages.local, key, defaultValue, serializer = exports.jsonSerializer(), converter = exports.identitySerializer(), } = args;
+        const { storageImpl = Storages_1.Storages.chrome.sync, key, defaultValue, serializer = exports.jsonSerializer(), converter = exports.identitySerializer(), } = args;
         const defaultValueRaw = serializer.serialize(converter.serialize(defaultValue));
         // noinspection CommaExpressionJS
         const raw = {

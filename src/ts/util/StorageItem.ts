@@ -183,7 +183,7 @@ export const StorageItem: StorageItemClass = {
     
     newObject<T, U>(args: StorageItemArgs<T, U>): StorageItem<T> {
         const {
-            storageImpl = Storages.local,
+            storageImpl = Storages.chrome.sync,
             key,
             defaultValue,
             serializer = jsonSerializer<U>(),

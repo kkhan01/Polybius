@@ -95,6 +95,7 @@ class Rules extends Component<{}, RulesState> {
     }
     
     public render(): ReactNode {
+        // TODO <div> cannot be a child of <table>
         return <div>
             <table>
                 

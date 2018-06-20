@@ -4,9 +4,13 @@ const immutableDescriptor: PropertyDescriptor = Object.freeze({
     configurable: true,
 });
 
-const defineSharedProperties = function(obj: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object): void {
+const defineSharedProperties = function(obj: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object,
+                                        overwrite: boolean = true): void {
     const properties: PropertyDescriptorMap & ThisType<any> = Object.getOwnPropertyDescriptors(propertyValues);
     Object.entries(properties).forEach(([propertyName, property]) => {
+        if (!overwrite && obj[propertyName]) {
+            return;
+        }
         property = {...property, ...sharedDescriptor};
         if (property.get || property.set) {
             delete property.writable;
@@ -16,29 +20,21 @@ const defineSharedProperties = function(obj: any, sharedDescriptor: PropertyDesc
     Object.defineProperties(obj, properties);
 };
 
-const defineImmutableProperties = function(obj: any, propertyValues: Object): void {
-    defineSharedProperties(obj, immutableDescriptor, propertyValues);
-};
-
-Object.defineProperties(Object, {
+defineSharedProperties(Object, immutableDescriptor, {
     
-    defineSharedProperties: {
-        writable: false,
-        enumerable: false,
-        configurable: false,
-        value: defineSharedProperties,
-    },
+    defineSharedProperties,
     
-    defineImmutableProperties: {
-        writable: false,
-        enumerable: false,
-        configurable: false,
-        value: defineImmutableProperties,
+    defineImmutableProperties(obj: any, propertyValues: Object, overwrite: boolean = true): void {
+        defineSharedProperties(obj, immutableDescriptor, propertyValues, overwrite);
     },
     
 });
 
 Object.defineImmutableProperties(Object, {
+    
+    definePolyfillProperties(obj: any, propertyValues: Object): void {
+        Object.defineImmutableProperties(obj, propertyValues, false);
+    },
     
     getPrototypeChain(object: any): Object[] {
         const chain: Object[] = [];
@@ -89,7 +85,7 @@ Object.defineImmutableProperties(Object.prototype, {
     },
     
     mapFields<T, U>(this: {[field: string]: T}, mapper: (field: T) => U): {[field: string]: U} {
-        const obj: {[field: string]: U} = {};
+        const obj: {[field: string]: U} = Object.create(null);
         for (const [key, value] of Object.entries(this)) {
             obj[key] = mapper(value);
         }
@@ -220,7 +216,7 @@ Object.defineImmutableProperties(Array.prototype, {
     },
     
     toObject<T>(this: [string, T][]): {[key: string]: T} {
-        let o: {[key: string]: T} = {};
+        let o: {[key: string]: T} = Object.create(null);
         for (const [k, v] of this) {
             o[k] = v;
         }
@@ -242,6 +238,29 @@ Object.defineImmutableProperties(Array.prototype, {
     
     callEach<T extends () => void>(this: T[]): void {
         this.forEach(f => f());
+    },
+    
+});
+
+Object.definePolyfillProperties(Array.prototype, {
+    
+    flatMap<T, U, This = undefined>(
+        this: T[],
+        flatMap: (this: This, value: T, index: number, array: T[]) => U | U[],
+        thisArg?: This): U[] {
+        if (thisArg) {
+            flatMap = flatMap.bind(thisArg);
+        }
+        return ([] as U[]).concat(...this.map(flatMap));
+    },
+    
+    flatten<T>(this: T[], depth: number = -1): any[] {
+        return depth === 0
+            ? this
+            : this.reduce(
+                (a, e: any | any[]) => a.concat(Array.isArray(e) ? e.flatten(depth - 1) : e),
+                [],
+            );
     },
     
 });

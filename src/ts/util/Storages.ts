@@ -1,6 +1,9 @@
+import chromep from "chrome-promise";
+import {chromepApi} from "chrome-promise/chrome-promise";
+import {StorageKey} from "../polybius/Storage";
 import {addExtensions} from "./extensions/allExtensions";
 import {BrowserStorage} from "./typeAliases";
-import {StorageKey} from "../polybius/Storage";
+import StorageArea = chromepApi.storage.StorageArea;
 
 
 export interface StorageImpl {
@@ -11,15 +14,17 @@ export interface StorageImpl {
     
 }
 
-type StorageImplMap = {[key: string]: StorageImpl};
-
 export interface Storages {
     
-    readonly local: StorageImpl;
+    readonly browser: {
+        readonly local: StorageImpl;
+        readonly session: StorageImpl;
+    };
     
-    readonly session: StorageImpl;
-    
-    readonly cloud: StorageImpl;
+    readonly chrome: {
+        readonly local: StorageImpl;
+        readonly sync: StorageImpl;
+    };
     
 }
 
@@ -31,22 +36,27 @@ const browserStorageImpl = function(storage: BrowserStorage): StorageImpl {
     };
 };
 
-type StorageType = keyof Storages;
+const chromeStorageImpl = function(storage: StorageArea): StorageImpl {
+    return {
+        get: async key => (await storage.get([key]))[key],
+        set: async (key, value) => await storage.set({[key]: value}),
+    };
+};
 
 export const Storages: Storages = {
     
-    local: browserStorageImpl(localStorage),
+    browser: {
+        local: browserStorageImpl(localStorage),
+        session: browserStorageImpl(sessionStorage),
+    },
     
-    session: browserStorageImpl(sessionStorage),
-    
-    // TODO
-    cloud: {
-        get: async key => localStorage[key],
-        set: async (key, value) => (localStorage[key] = value, undefined),
+    chrome: {
+        local: chromeStorageImpl(chromep.storage.local),
+        sync: chromeStorageImpl(chromep.storage.sync),
     },
     
 };
 
 addExtensions();
 
-Storages.freeze();
+Storages.freezeFields().freeze();

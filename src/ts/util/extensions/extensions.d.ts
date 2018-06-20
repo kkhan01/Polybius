@@ -6,9 +6,11 @@ declare interface HTMLAppendable<T> {
 
 declare interface ObjectConstructor {
     
-    defineSharedProperties(object: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object): void;
+    defineSharedProperties(object: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object, overwrite?: boolean): void;
     
-    defineImmutableProperties(object: any, propertyValues: Object): void;
+    defineImmutableProperties(object: any, propertyValues: Object, overwrite?: boolean): void;
+    
+    definePolyfillProperties(object: any, propertyValues: Object): void;
     
     getPrototypeChain(object: any): Object[];
     

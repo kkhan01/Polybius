@@ -71,6 +71,8 @@ class Rules extends react_1.Component {
             React.createElement("a", { href: "http://www.pdf995.com/samples/pdf.pdf", download: true, style: { fontSize: "larger", margin: 100 } }, "PDF"),
             React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
             React.createElement("a", { href: "https://github.com/kkysen/Polybius/raw/master/src/img/logo.png", download: true, style: { fontSize: "larger", margin: 100 } }, "Logo"),
+            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
+            React.createElement("a", { href: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg", download: true, style: { fontSize: "larger", margin: 100 } }, "Google"),
             React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }));
     }
 }

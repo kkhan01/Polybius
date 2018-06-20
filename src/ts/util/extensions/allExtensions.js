@@ -204,6 +204,22 @@ Object.definePolyfillProperties(Array.prototype, {
             : this.reduce((a, e) => a.concat(Array.isArray(e) ? e.flatten(depth - 1) : e), []);
     },
 });
+const nativeSlice = String.prototype.slice;
+Object.defineImmutableProperties(String.prototype, {
+    equals(s) {
+        return this === s;
+    },
+    boundEquals() {
+        return s => this === s;
+    },
+    // allow negative indices for end
+    slice(start = 0, end = this.length) {
+        if (end < 0) {
+            end = this.length + end;
+        }
+        return nativeSlice.call(this, start, end);
+    },
+});
 Object.defineImmutableProperties(Number, {
     isNumber(n) {
         return !Number.isNaN(n);

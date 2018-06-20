@@ -9,7 +9,7 @@ import {storage} from "./Storage";
 
 interface RouterTypesDropdownProps {
     
-    current: RouterType;
+    readonly current: RouterType;
     
 }
 
@@ -120,6 +120,11 @@ class Rules extends Component<{}, RulesState> {
             
             <a href="https://github.com/kkysen/Polybius/raw/master/src/img/logo.png" download
                style={{fontSize: "larger", margin: 100}}>Logo</a>
+            
+            <Repeat times={5} render={() => <br/>}/>
+            
+            <a href="https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg" download
+               style={{fontSize: "larger", margin: 100}}>Google</a>
             
             <Repeat times={5} render={() => <br/>}/>
         

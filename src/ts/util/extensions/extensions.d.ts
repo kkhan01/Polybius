@@ -1,3 +1,4 @@
+
 declare interface HTMLAppendable<T> {
     
     appendTo(parent: HTMLElement): T;
@@ -15,6 +16,8 @@ declare interface ObjectConstructor {
     getPrototypeChain(object: any): Object[];
     
     getAllPropertyNames(object: any): string[];
+    
+    bind<T>(t: T): T;
     
     getting<T, K extends keyof T>(key: K): (o: T) => T[K];
     
@@ -101,6 +104,14 @@ declare interface Array<T> {
     mapCall<U, T extends () => U>(this: T[]): U[];
     
     callEach<T extends () => void>(this: T[]): void;
+    
+}
+
+declare interface String {
+    
+    equals(s: string): boolean;
+    
+    boundEquals(): (s: string) => boolean;
     
 }
 

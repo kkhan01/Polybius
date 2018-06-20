@@ -43,7 +43,7 @@ exports.Router = (() => {
     const byExtension = byPath.map(path => path.extension);
     const byUrl = byDownload.map(download => new URL(download.url));
     const byUrlHref = byUrl.map(url => url.href);
-    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, url.protocol.length - 1)); // strip trailing :
+    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, -1)); // strip trailing :
     const byUrlHost = byUrl.map(url => url.host);
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
@@ -57,7 +57,7 @@ exports.Router = (() => {
             return regex.boundTest();
         }
         else {
-            return s => input === s;
+            return input.boundEquals();
         }
     };
     const numberTest = (input) => {

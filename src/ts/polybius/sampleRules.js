@@ -6,9 +6,9 @@ const Storage_1 = require("./Storage");
 exports.addSampleRules = function () {
     // noinspection JSIgnoredPromiseFromCall
     Storage_1.storage.routers.set([
-        Router_1.Router.urlHash.create({
+        Router_1.Router.urlHref.create({
             enabled: true,
-            test: "google",
+            test: /^.*google.*$/i.toSource(),
             route: Path_1.Path.of("google"),
         }),
         Router_1.Router.filename.create({

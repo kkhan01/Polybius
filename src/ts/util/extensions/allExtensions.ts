@@ -1,3 +1,5 @@
+import {Test} from "../functional/Test";
+
 const immutableDescriptor: PropertyDescriptor = Object.freeze({
     writable: false,
     enumerable: false,
@@ -261,6 +263,28 @@ Object.definePolyfillProperties(Array.prototype, {
                 (a, e: any | any[]) => a.concat(Array.isArray(e) ? e.flatten(depth - 1) : e),
                 [],
             );
+    },
+    
+});
+
+const nativeSlice = String.prototype.slice;
+
+Object.defineImmutableProperties(String.prototype, {
+    
+    equals(this: string, s: string): boolean {
+        return this === s;
+    },
+    
+    boundEquals(this: string): (s: string) => boolean {
+        return s => this === s;
+    },
+    
+    // allow negative indices for end
+    slice(this: string, start: number = 0, end: number = this.length) {
+        if (end < 0) {
+            end = this.length + end;
+        }
+        return nativeSlice.call(this, start, end);
     },
     
 });

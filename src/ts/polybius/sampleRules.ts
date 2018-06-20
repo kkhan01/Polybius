@@ -5,9 +5,9 @@ import {storage} from "./Storage";
 export const addSampleRules = function(): void {
     // noinspection JSIgnoredPromiseFromCall
     storage.routers.set([
-        Router.urlHash.create({
+        Router.urlHref.create({
             enabled: true,
-            test: "google",
+            test: /^.*google.*$/i.toSource(),
             route: Path.of("google"),
         }),
         Router.filename.create({

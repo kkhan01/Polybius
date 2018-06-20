@@ -1,8 +1,13 @@
+import {anyWindow} from "../anyWindow";
 import {addExtensions} from "../extensions/allExtensions";
 
 addExtensions();
 
 export const bind = function <T>(target: T): T {
+    if (typeof target !== "object") {
+        throw new Error(`cannot bind non-object: ${target}`);
+    }
+    
     const _target = target as {[key: string]: any};
     
     const isBindable = (value: any) => value.bind && !value.bound; // don't double bind methods
@@ -12,15 +17,18 @@ export const bind = function <T>(target: T): T {
         return f;
     };
     
-    Object.defineImmutableProperties(target, Object.getAllPropertyNames(target)
+    const properties = Object.getAllPropertyNames(target)
         .map(key => ({key, value: _target[key]}))
         .filter(({value}) => isBindable(value))
         .map(({key, value}) => [key, bind(value)] as [string, Function])
-        .toObject()
-    );
+        .toObject();
+    
+    Object.defineImmutableProperties(target, properties);
     
     return target;
 };
+
+anyWindow.bind = bind;
 
 interface Class<T> {
     

@@ -53,6 +53,8 @@ declare interface FunctionConstructor {
 
 declare interface Function {
     
+    bind<T>(this: T, thisArg: any): T;
+    
     then<T, U, V>(this: (arg: T) => U, nextFunc: (arg: U) => V): (arg: T) => V;
     
     then(this: () => void, nextFunc: () => void): () => void;

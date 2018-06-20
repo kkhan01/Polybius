@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Path_1 = require("../util/Path");
 const Router_1 = require("./Router");
-const polybiusKey = "Polybius";
-const routerRulesKey = "routerRules";
 exports.serializeRouterRule = function ({ type, enabled, test, route: { path } }) {
     return { type, enabled, test, path };
 };

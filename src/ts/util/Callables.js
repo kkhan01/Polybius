@@ -4,10 +4,7 @@ const bind_1 = require("./decorators/bind");
 exports.Callables = {
     new() {
         const { push: add, callEach: call } = bind_1.bind([]);
-        return {
-            add,
-            call,
-        };
+        return { add, call };
     },
 };
 //# sourceMappingURL=Callables.js.map

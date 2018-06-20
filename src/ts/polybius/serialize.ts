@@ -1,10 +1,7 @@
-import chromep from "chrome-promise";
 import {Path} from "../util/Path";
 import {Router, RouterType} from "./Router";
 import {RouterRule} from "./RouterRule";
 
-const polybiusKey = "Polybius";
-const routerRulesKey = "routerRules";
 
 export interface SerializedRouterRule {
     

@@ -36,7 +36,7 @@ Object.defineProperties(Object, {
 Object.defineImmutableProperties(Object, {
     getAllPropertyNames(object) {
         const allNames = [];
-        for (let o = object; o != Object.prototype; o = Object.getPrototypeOf(o)) {
+        for (let o = object; o !== null; o = Object.getPrototypeOf(o)) {
             allNames.addAll(Object.getOwnPropertyNames(o));
         }
         return Array.from(new Set(allNames));

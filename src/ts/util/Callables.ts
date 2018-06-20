@@ -17,14 +17,8 @@ export interface Callables  {
 export const Callables = {
     
     new(): Callables {
-        
         const {push: add, callEach: call}: Callable[] = bind([]);
-        
-        return {
-            add,
-            call,
-        };
-        
+        return {add, call};
     },
     
 };

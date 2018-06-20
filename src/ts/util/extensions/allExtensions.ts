@@ -40,12 +40,21 @@ Object.defineProperties(Object, {
 
 Object.defineImmutableProperties(Object, {
     
-    getAllPropertyNames(object: any): string[] {
-        const allNames: string[] = [];
+    getPrototypeChain(object: any): Object[] {
+        const chain: Object[] = [];
         for (let o = object; o !== null; o = Object.getPrototypeOf(o)) {
-            allNames.addAll(Object.getOwnPropertyNames(o));
+            chain.push(o);
         }
-        return Array.from(new Set(allNames));
+        return chain;
+    },
+    
+    getAllPropertyNames(object: any): string[] {
+        return Array.from(
+            new Set(
+                Object.getPrototypeChain(object)
+                    .flatMap(Object.getOwnPropertyNames)
+            )
+        );
     },
     
     getting<T, K extends keyof T>(key: K): (o: T) => T[K] {

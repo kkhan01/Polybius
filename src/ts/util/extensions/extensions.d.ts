@@ -10,6 +10,8 @@ declare interface ObjectConstructor {
     
     defineImmutableProperties(object: any, propertyValues: Object): void;
     
+    getPrototypeChain(object: any): Object[];
+    
     getAllPropertyNames(object: any): string[];
     
     getting<T, K extends keyof T>(key: K): (o: T) => T[K];

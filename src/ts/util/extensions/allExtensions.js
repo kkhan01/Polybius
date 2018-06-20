@@ -34,12 +34,16 @@ Object.defineProperties(Object, {
     },
 });
 Object.defineImmutableProperties(Object, {
-    getAllPropertyNames(object) {
-        const allNames = [];
+    getPrototypeChain(object) {
+        const chain = [];
         for (let o = object; o !== null; o = Object.getPrototypeOf(o)) {
-            allNames.addAll(Object.getOwnPropertyNames(o));
+            chain.push(o);
         }
-        return Array.from(new Set(allNames));
+        return chain;
+    },
+    getAllPropertyNames(object) {
+        return Array.from(new Set(Object.getPrototypeChain(object)
+            .flatMap(Object.getOwnPropertyNames)));
     },
     getting(key) {
         return o => o[key];

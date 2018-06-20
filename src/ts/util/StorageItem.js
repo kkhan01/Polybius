@@ -87,7 +87,7 @@ exports.StorageItem = {
                 deserialize: a => a.map(deserialize),
             },
             serializer,
-        }));
+        })).freeze();
     },
 };
 exports.StorageItem.freeze();

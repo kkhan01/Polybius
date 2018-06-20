@@ -50,15 +50,15 @@ const Rule: SFC<{rule: RouterRule}> = ({rule: {enabled, test, route, type}}) => 
                     <RouterTypesDropdown current={type}/>
                 </td>
                 <td>
-                    <input value={test} id="test" type="text" className="validate"/>
+                    <input defaultValue={test} id="test" type="text" className="validate"/>
                     <label htmlFor="test"/>
                 </td>
                 <td>
-                    <input value={route.toString()} id="destdir" type="text" className="validate"/>
+                    <input defaultValue={route.toString()} id="destdir" type="text" className="validate"/>
                     <label htmlFor="destdir"/>
                 </td>
                 <td>
-                    <input value={enabled.toString()} id="enabled" type="text" className="validate"/>
+                    <input defaultValue={enabled.toString()} id="enabled" type="text" className="validate"/>
                     <label htmlFor="enabled"/>
                 </td>
             </tr>
@@ -101,9 +101,9 @@ class Rules extends Component<{}, RulesState> {
                 
                 <ExistingRules rules={this.rules}/>
                 <tr>
-                    <td><input type="text" name="destination" value="~/"/></td>
-                    <td><input type="text" name="firstname" value=""/></td>
-                    <td><input type="text" name="extension" value=""/></td>
+                    <td><input type="text" name="destination" defaultValue="~/"/></td>
+                    <td><input type="text" name="firstname" defaultValue=""/></td>
+                    <td><input type="text" name="extension" defaultValue=""/></td>
                 </tr>
             </table>
             

@@ -1,5 +1,5 @@
 import {StorageKey} from "../polybius/Storage";
-import {Callable, Callables} from "./Callables";
+import {Callables} from "./Callables";
 import {StorageImpl, Storages} from "./Storages";
 
 interface BaseStorageItem<T> {
@@ -220,7 +220,7 @@ export const StorageItem: StorageItemClass = {
                 deserialize: a => a.map(deserialize),
             },
             serializer,
-        }));
+        })).freeze();
     },
     
 };

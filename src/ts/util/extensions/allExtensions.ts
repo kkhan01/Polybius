@@ -238,8 +238,8 @@ Object.defineImmutableProperties(Array.prototype, {
         return this.map(f => f());
     },
     
-    callEach<T extends () => void>(this: T[]): void {
-        this.forEach(f => f());
+    callEach<T extends (u: U) => void, U = undefined>(this: T[], u: U): void {
+        this.forEach(f => f(u));
     },
     
 });

@@ -1,6 +1,6 @@
 import {StorageKey} from "../polybius/Storage";
 import {Callables} from "./Callables";
-import {StorageImpl, Storages} from "./Storages";
+import {StorageImpl, storages} from "./Storages";
 
 interface BaseStorageItem<T> {
     
@@ -183,7 +183,7 @@ export const StorageItem: StorageItemClass = {
     
     newObject<T, U>(args: StorageItemArgs<T, U>): StorageItem<T> {
         const {
-            storageImpl = Storages.chrome.sync,
+            storageImpl = storages.chrome.sync,
             key,
             defaultValue,
             serializer = jsonSerializer<U>(),
@@ -200,7 +200,13 @@ export const StorageItem: StorageItemClass = {
         
         const serialized = makeTier(raw, serializer);
         const {get, set} = makeTier(serialized, converter);
-        const cached = cache({get, set, refresher: Callables.new()});
+        const refresher = Callables.new();
+        storageImpl.refreshers.add(changes => {
+            if (key in changes) {
+                refresher.call();
+            }
+        });
+        const cached = cache({get, set, refresher});
         return addMap(cached).freeze();
     },
     

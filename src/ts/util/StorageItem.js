@@ -64,7 +64,7 @@ exports.jsonSerializer = function () {
 };
 exports.StorageItem = {
     newObject(args) {
-        const { storageImpl = Storages_1.Storages.chrome.sync, key, defaultValue, serializer = exports.jsonSerializer(), converter = exports.identitySerializer(), } = args;
+        const { storageImpl = Storages_1.storages.chrome.sync, key, defaultValue, serializer = exports.jsonSerializer(), converter = exports.identitySerializer(), } = args;
         const defaultValueRaw = serializer.serialize(converter.serialize(defaultValue));
         // noinspection CommaExpressionJS
         const raw = {
@@ -73,7 +73,13 @@ exports.StorageItem = {
         };
         const serialized = makeTier(raw, serializer);
         const { get, set } = makeTier(serialized, converter);
-        const cached = cache({ get, set, refresher: Callables_1.Callables.new() });
+        const refresher = Callables_1.Callables.new();
+        storageImpl.refreshers.add(changes => {
+            if (key in changes) {
+                refresher.call();
+            }
+        });
+        const cached = cache({ get, set, refresher });
         return addMap(cached).freeze();
     },
     newArray(args) {

@@ -187,8 +187,8 @@ Object.defineImmutableProperties(Array.prototype, {
     mapCall() {
         return this.map(f => f());
     },
-    callEach() {
-        this.forEach(f => f());
+    callEach(u) {
+        this.forEach(f => f(u));
     },
 });
 Object.definePolyfillProperties(Array.prototype, {

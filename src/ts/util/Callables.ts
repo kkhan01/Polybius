@@ -1,23 +1,34 @@
 import {bind} from "./decorators/bind";
 
-export interface Callable {
+export interface Callable<T = undefined> {
     
-    (): void;
+    (t: T): void;
     
 }
 
-export interface Callables  {
+interface PolymorphicCall<T, This> {
     
-    add(callable: Callable): void;
+    (t: T): void;
     
-    call(): void;
+    (this: This): void;
     
 }
+
+export interface Callables<T = undefined> {
+    
+    add(callable: Callable<T>): void;
+    
+    call: PolymorphicCallable<T>;
+    
+}
+
+type PolymorphicCallable<T> = PolymorphicCall<T, Callables<T>>;
 
 export const Callables = {
     
-    new(): Callables {
-        const {push: add, callEach: call}: Callable[] = bind([]);
+    new<T = undefined>(): Callables<T> {
+        const {push: add, callEach: _call}: Callable<T>[] = bind([]);
+        const call = _call as PolymorphicCallable<T>;
         return {add, call};
     },
     

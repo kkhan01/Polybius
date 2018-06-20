@@ -103,7 +103,7 @@ declare interface Array<T> {
     
     mapCall<U, T extends () => U>(this: T[]): U[];
     
-    callEach<T extends () => void>(this: T[]): void;
+    callEach<T extends (u: U) => void, U = undefined>(this: T[], u: U): void;
     
 }
 

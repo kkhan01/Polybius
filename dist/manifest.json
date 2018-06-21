@@ -6,12 +6,15 @@
     "storage",
     "downloads"
   ],
-  "content_security_policy": "script-src 'self'; default-src 'self'",
+  "content_security_policy": "script-src 'self'; object-src 'self'",
   "background": {
     "scripts": [
       "Polybius.js"
     ],
     "persistent": false
+  },
+  "sandbox": {
+    "pages": [""]
   },
   "options_page": "options.html",
   "page_action": {

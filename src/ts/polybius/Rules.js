@@ -65,15 +65,18 @@ class Rules extends react_1.Component {
                         React.createElement("input", { type: "text", name: "firstname", defaultValue: "" })),
                     React.createElement("td", null,
                         React.createElement("input", { type: "text", name: "extension", defaultValue: "" })))),
-            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
-            React.createElement("a", { href: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png", download: true, style: { fontSize: "larger", margin: 100 } }, "PNG"),
-            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
-            React.createElement("a", { href: "http://www.pdf995.com/samples/pdf.pdf", download: true, style: { fontSize: "larger", margin: 100 } }, "PDF"),
-            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
-            React.createElement("a", { href: "https://github.com/kkysen/Polybius/raw/master/src/img/logo.png", download: true, style: { fontSize: "larger", margin: 100 } }, "Logo"),
-            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }),
-            React.createElement("a", { href: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg", download: true, style: { fontSize: "larger", margin: 100 } }, "Google"),
-            React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) }));
+            (() => {
+                const br5 = React.createElement(Repeat_1.Repeat, { times: 5, render: () => React.createElement("br", null) });
+                return Object.entries({
+                    PNG: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png",
+                    PDF: "http://www.pdf995.com/samples/pdf.pdf",
+                    Logo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
+                    Google: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg",
+                }).map(([name, link], i) => React.createElement("div", null,
+                    i === 0 && br5,
+                    React.createElement("a", { href: link, download: true, style: { fontSize: "larger", margin: 100 } }, name),
+                    br5));
+            })());
     }
 }
 exports.reactMain = function () {

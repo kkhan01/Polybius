@@ -107,26 +107,23 @@ class Rules extends Component<{}, RulesState> {
                 </tr>
             </table>
             
-            <Repeat times={5} render={() => <br/>}/>
-            
-            <a href="http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png" download
-               style={{fontSize: "larger", margin: 100}}>PNG</a>
-            
-            <Repeat times={5} render={() => <br/>}/>
-            
-            <a href="http://www.pdf995.com/samples/pdf.pdf" download style={{fontSize: "larger", margin: 100}}>PDF</a>
-            
-            <Repeat times={5} render={() => <br/>}/>
-            
-            <a href="https://github.com/kkysen/Polybius/raw/master/src/img/logo.png" download
-               style={{fontSize: "larger", margin: 100}}>Logo</a>
-            
-            <Repeat times={5} render={() => <br/>}/>
-            
-            <a href="https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg" download
-               style={{fontSize: "larger", margin: 100}}>Google</a>
-            
-            <Repeat times={5} render={() => <br/>}/>
+            {(() => {
+                const br5 = <Repeat times={5} render={() => <br/>}/>;
+                return Object.entries({
+                    PNG: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png",
+                    PDF: "http://www.pdf995.com/samples/pdf.pdf",
+                    Logo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
+                    Google: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg",
+                }).map(([name, link], i) =>
+                    <div>
+                        {i === 0 && br5}
+                        <a href={link} download style={{fontSize: "larger", margin: 100}}>
+                            {name}
+                        </a>
+                        {br5}
+                    </div>
+                );
+            })()}
         
         </div>;
     }

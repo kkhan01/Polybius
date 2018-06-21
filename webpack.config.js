@@ -4,8 +4,10 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const production = true;
 const mode = production ? "production" : "development";
 
-const htmlPlugin = function(name) {
+const htmlPlugin = function(name, chunks) {
     return new HtmlWebpackPlugin({
+        inject: true,
+        chunks: chunks || undefined,
         filename: `${name}.html`,
         template: `./src/html/${name}.html`,
         hash: true,
@@ -54,10 +56,15 @@ const htmlPlugin = function(name) {
     });
 };
 
+const htmlPlugins = function(args) {
+    return Object.entries(args).map(([name, chunks]) => htmlPlugin(name, chunks));
+};
+
 module.exports = {
     target: "web",
     entry: {
-        Polybius: "./src/ts/Polybius.ts",
+        Polybius: "./src/ts/polybius/Polybius.ts",
+        PolybiusSandbox: "./src/ts/polybius/PolybiusSandbox.ts",
     },
     output: {
         filename: "[name].js",
@@ -81,7 +88,11 @@ module.exports = {
     //     },
     // },
     plugins: [
-        ...["popup", "options"].map(htmlPlugin),
+        ...htmlPlugins({
+            popup: [],
+            options: ["Polybius"],
+            sandbox: ["PolybiusSandbox"],
+        }),
     ],
     mode: mode,
 };

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = require("react");
 const react_1 = require("react");
-const ReactDOM = require("react-dom");
+const react_dom_1 = require("react-dom");
 const anyWindow_1 = require("../util/anyWindow");
 const Repeat_1 = require("../util/components/Repeat");
 const Router_1 = require("./Router");
@@ -14,7 +14,7 @@ class RouterTypesDropdown extends react_1.Component {
         // M.Dropdown.init(elements, {});
     }
     render() {
-        return React.createElement("select", { style: { display: "block" } }, Router_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: type, selected: this.props.current === type }, displayName)));
+        return React.createElement("select", { style: { display: "block" }, defaultValue: this.props.current }, Router_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: type }, displayName)));
     }
 }
 const Rule = ({ rule: { enabled, test, route, type } }) => {
@@ -72,7 +72,7 @@ class Rules extends react_1.Component {
                     PDF: "http://www.pdf995.com/samples/pdf.pdf",
                     Logo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
                     Google: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg",
-                }).map(([name, link], i) => React.createElement("div", null,
+                }).map(([name, link], i) => React.createElement("div", { key: i },
                     i === 0 && br5,
                     React.createElement("a", { href: link, download: true, style: { fontSize: "larger", margin: 100 } }, name),
                     br5));
@@ -81,7 +81,7 @@ class Rules extends react_1.Component {
 }
 exports.reactMain = function () {
     const root = document.body.appendDiv();
-    anyWindow_1.anyWindow.root = root;
-    ReactDOM.render(React.createElement(Rules, null), root);
+    anyWindow_1.globals({ root });
+    react_dom_1.render(React.createElement(Rules, null), root);
 };
 //# sourceMappingURL=Rules.js.map

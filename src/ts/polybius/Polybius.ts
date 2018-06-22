@@ -1,3 +1,4 @@
+import {sandboxMain} from "../util/sandbox/SandboxMessenger";
 import {addDownloadListener} from "./downloadListener";
 import {reactMain} from "./Rules";
 import {addSampleRules} from "./sampleRules";
@@ -10,6 +11,7 @@ const main = function(): void {
     addSampleRules();
     addDownloadListener();
     reactMain();
+    sandboxMain(); // TODO
 };
 
 main();

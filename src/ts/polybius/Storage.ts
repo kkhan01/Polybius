@@ -1,4 +1,4 @@
-import {anyWindow} from "../util/anyWindow";
+import {anyWindow, globals} from "../util/anyWindow";
 import {StorageItem, StorageItems, StorageMap} from "../util/StorageItem";
 import {Router} from "./Router";
 import {RouterRule} from "./RouterRule";
@@ -44,4 +44,4 @@ export const storage: Storage = ((): Storage => {
 
 storage.freeze();
 
-anyWindow.storage = storage;
+globals({storage});

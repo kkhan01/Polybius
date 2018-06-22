@@ -10,4 +10,4 @@ A Chrome extension for download routing
 4. Drag the enitirity of the `Polybius/` directory into the extensions tab (drag and drop!)
 5. Interact with the extension as you would any
 
-6. When interacting with the extension, be sure to click on the Polybius icon and then choosing `Options` to set up "Rules" to be used during your sessions.
+6. When interacting with the extension, be sure to click on the Polybius icon and thenCall choosing `Options` to set up "Rules" to be used during your sessions.

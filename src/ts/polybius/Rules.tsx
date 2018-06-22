@@ -1,7 +1,8 @@
 import * as React from "react";
 import {Component, ReactNode, SFC} from "react";
+import {render} from "react-dom";
 import * as ReactDOM from "react-dom";
-import {anyWindow} from "../util/anyWindow";
+import {anyWindow, globals} from "../util/anyWindow";
 import {Repeat} from "../util/components/Repeat";
 import {Routers, RouterType} from "./Router";
 import {RouterRule} from "./RouterRule";
@@ -23,9 +24,9 @@ class RouterTypesDropdown extends Component<RouterTypesDropdownProps, {}> {
     }
     
     public render(): ReactNode {
-        return <select style={{display: "block"}}>
+        return <select style={{display: "block"}} defaultValue={this.props.current as string}>
             {Routers.map(({type, displayName}) =>
-                <option key={type} value={type} selected={this.props.current === type}>{displayName}</option>)
+                <option key={type} value={type}>{displayName}</option>)
             }
         </select>;
     }
@@ -115,7 +116,7 @@ class Rules extends Component<{}, RulesState> {
                     Logo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
                     Google: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg",
                 }).map(([name, link], i) =>
-                    <div>
+                    <div key={i}>
                         {i === 0 && br5}
                         <a href={link} download style={{fontSize: "larger", margin: 100}}>
                             {name}
@@ -124,7 +125,6 @@ class Rules extends Component<{}, RulesState> {
                     </div>
                 );
             })()}
-        
         </div>;
     }
     
@@ -132,6 +132,6 @@ class Rules extends Component<{}, RulesState> {
 
 export const reactMain = function(): void {
     const root = document.body.appendDiv();
-    anyWindow.root = root;
-    ReactDOM.render(<Rules/>, root);
+    globals({root});
+    render(<Rules/>, root);
 };

@@ -97,7 +97,7 @@ Object.defineImmutableProperties(Function, {
     },
 });
 Object.defineImmutableProperties(Function.prototype, {
-    then(nextFunc) {
+    thenCall(nextFunc) {
         return (arg) => nextFunc(this(arg));
     },
     applyReturning() {
@@ -289,6 +289,12 @@ Object.defineImmutableProperties(HTMLElement.prototype, {
     },
     withInnerHTML(html) {
         this.innerHTML = html;
+        return this;
+    },
+});
+Object.defineImmutableProperties(HTMLIFrameElement.prototype, {
+    activate() {
+        this.appendTo(document.body);
         return this;
     },
 });

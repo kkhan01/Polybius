@@ -1,10 +1,3 @@
-
-declare interface HTMLAppendable<T> {
-    
-    appendTo(parent: HTMLElement): T;
-    
-}
-
 declare interface ObjectConstructor {
     
     defineSharedProperties(object: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object, overwrite?: boolean): void;
@@ -53,11 +46,11 @@ declare interface FunctionConstructor {
 
 declare interface Function {
     
-    bind<T>(this: T, thisArg: any): T;
+    bind<T extends Function>(this: T, thisArg: any): T;
     
-    then<T, U, V>(this: (arg: T) => U, nextFunc: (arg: U) => V): (arg: T) => V;
+    thenCall<T, U, V>(this: (arg: T) => U, nextFunc: (arg: U) => V): (arg: T) => V;
     
-    then(this: () => void, nextFunc: () => void): () => void;
+    thenCall(this: () => void, nextFunc: () => void): () => void;
     
     applyReturning<T>(this: (arg: T) => void): (arg: T) => T;
     
@@ -171,6 +164,34 @@ declare interface HTMLElement {
     
 }
 
+declare interface HTMLAppendable<T> {
+    
+    appendTo(parent: HTMLElement): T;
+    
+}
+
 declare interface HTMLElement extends HTMLAppendable<HTMLElement> {
 
+}
+
+declare interface HTMLIFrameElement {
+    
+    activate(): ActiveHTMLIFrameElement;
+    
+}
+
+declare interface ActiveHTMLIFrameElement extends HTMLIFrameElement {
+    
+    readonly contentDocument: Document;
+    
+    readonly contentWindow: Window;
+    
+}
+
+declare type Transferable = ArrayBuffer | MessagePort | ImageBitmap;
+
+declare interface Window {
+    
+    postMessage(message: any, targetOrigin: string, transfer?: Transferable[]): void;
+    
 }

@@ -1,4 +1,4 @@
-import {anyWindow} from "../anyWindow";
+import {anyWindow, globals} from "../anyWindow";
 import {addExtensions} from "../extensions/allExtensions";
 
 addExtensions();
@@ -28,7 +28,7 @@ export const bind = function <T>(target: T): T {
     return target;
 };
 
-anyWindow.bind = bind;
+globals({bind});
 
 interface Class<T> {
     

@@ -22,7 +22,7 @@ exports.bind = function (target) {
     Object.defineImmutableProperties(target, properties);
     return target;
 };
-anyWindow_1.anyWindow.bind = exports.bind;
+anyWindow_1.globals({ bind: exports.bind });
 exports.bindClass = function (Target) {
     return class extends Target {
         // noinspection JSUnusedGlobalSymbols

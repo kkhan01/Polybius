@@ -127,7 +127,7 @@ Object.defineImmutableProperties(Function, {
 
 Object.defineImmutableProperties(Function.prototype, {
     
-    then<T, U, V>(this: (arg: T) => U, nextFunc: (arg: U) => V): (arg: T) => V {
+    thenCall<T, U, V>(this: (arg: T) => U, nextFunc: (arg: U) => V): (arg: T) => V {
         return (arg: T) => nextFunc(this(arg));
     },
     
@@ -383,6 +383,15 @@ Object.defineImmutableProperties(HTMLElement.prototype, {
     withInnerHTML<T extends HTMLElement>(this: T, html: string): T {
         this.innerHTML = html;
         return this;
+    },
+    
+});
+
+Object.defineImmutableProperties(HTMLIFrameElement.prototype, {
+    
+    activate(this: HTMLIFrameElement): ActiveHTMLIFrameElement {
+        this.appendTo(document.body);
+        return this as ActiveHTMLIFrameElement;
     },
     
 });

@@ -1,7 +1,7 @@
 import chromep from "chrome-promise";
 import {chromepApi} from "chrome-promise/chrome-promise";
 import {StorageKey} from "../polybius/Storage";
-import {anyWindow} from "./anyWindow";
+import {anyWindow, globals} from "./anyWindow";
 import {Callables} from "./Callables";
 import {addExtensions} from "./extensions/allExtensions";
 import {BrowserStorage} from "./typeAliases";
@@ -69,9 +69,12 @@ export const storages: Storages = {
         session: browserStorageImpl(sessionStorage),
     },
     
-    chrome: {
+    chrome: chromep.storage ? {
         local: chromeStorageImpl(chromep.storage.local),
         sync: chromeStorageImpl(chromep.storage.sync),
+    } : {
+        local: browserStorageImpl(localStorage),
+        sync: browserStorageImpl(localStorage),
     },
     
 };
@@ -80,8 +83,8 @@ addExtensions();
 
 storages.freezeFields().freeze();
 
-anyWindow.storages = storages;
+globals({storages});
 
-chrome.storage.onChanged.addListener((changes: StorageChanges, areaName: string) => {
+chrome.storage && chrome.storage.onChanged.addListener((changes: StorageChanges, areaName: string) => {
     storages.chrome.sync.refreshers.call(changes);
 });

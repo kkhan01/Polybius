@@ -28,15 +28,18 @@ exports.storages = {
         local: browserStorageImpl(localStorage),
         session: browserStorageImpl(sessionStorage),
     },
-    chrome: {
+    chrome: chrome_promise_1.default.storage ? {
         local: chromeStorageImpl(chrome_promise_1.default.storage.local),
         sync: chromeStorageImpl(chrome_promise_1.default.storage.sync),
+    } : {
+        local: browserStorageImpl(localStorage),
+        sync: browserStorageImpl(localStorage),
     },
 };
 allExtensions_1.addExtensions();
 exports.storages.freezeFields().freeze();
-anyWindow_1.anyWindow.storages = exports.storages;
-chrome.storage.onChanged.addListener((changes, areaName) => {
+anyWindow_1.globals({ storages: exports.storages });
+chrome.storage && chrome.storage.onChanged.addListener((changes, areaName) => {
     exports.storages.chrome.sync.refreshers.call(changes);
 });
 //# sourceMappingURL=Storages.js.map

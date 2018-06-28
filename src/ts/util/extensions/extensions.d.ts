@@ -1,3 +1,7 @@
+declare type OrFalsy<T> = T | false | 0 | null | undefined | "";
+
+declare type Truthy<T> = T extends false | 0 | null | undefined | "" ? never : T;
+
 declare interface ObjectConstructor {
     
     defineSharedProperties(object: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object, overwrite?: boolean): void;
@@ -82,9 +86,9 @@ declare interface Array<T> {
     
     addAll(values: T[], index?: number): void;
     
-    applyOn<T, U>(this: T[], func: (args: T[]) => U): U;
+    applyOn<U>(func: (args: T[]) => U): U;
     
-    callOn<T, U>(this: T[], func: (...args: T[]) => U): U;
+    callOn<U>(func: (...args: T[]) => U): U;
     
     toObject<T, K extends keyof T>(this: [K, T[K][]]): T;
     
@@ -92,13 +96,21 @@ declare interface Array<T> {
     
     toObject(this: [string, any][]): any;
     
-    sortBy<T, U>(this: T[], key: (t: T) => U): T[];
+    sortBy<U>(key: (t: T) => U): T[];
     
-    random<T>(this: T[]): T;
+    random(): T;
     
     mapCall<U, T extends () => U>(this: T[]): U[];
     
     callEach<T extends (u: U) => void, U = undefined>(this: T[], u: U): void;
+    
+    mapFilter<U>(map: (value: T, index: number, array: T[]) => OrFalsy<U>): U[];
+    
+    asyncMap<U>(map: (value: T, index: number, array: T[]) => Promise<U>): Promise<U[]>;
+    
+    asyncFilter(filter: (value: T, index: number, array: T[]) => Promise<boolean>): Promise<T[]>;
+    
+    asyncMapFilter<U>(map: (value: T, index: number, array: T[]) => Promise<OrFalsy<U>>): Promise<U[]>;
     
 }
 
@@ -118,13 +130,9 @@ declare interface NumberConstructor {
     
 }
 
-declare interface RegExp {
+declare interface RegExpConstructor {
     
-    boundTest(): (s: string) => boolean;
-    
-    boundExec(): (s: string) => RegExpExecArray | null;
-    
-    toSource(): string;
+    toSource(regExp: RegExp): string;
     
 }
 

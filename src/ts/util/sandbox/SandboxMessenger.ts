@@ -1,4 +1,7 @@
 import {globals} from "../anyWindow";
+import {addExtensions} from "../extensions/allExtensions";
+
+addExtensions();
 
 export interface SandboxedFunction<R, Ex = any> extends Function {
     
@@ -157,11 +160,13 @@ export const SandboxMessenger = {
 };
 
 export const sandboxMain = async function(): Promise<void> {
-    const sandbox = await SandboxMessenger.new("sandbox.html");
-    globals({sandbox});
-    console.log(sandbox);
-    const f = await sandbox.compile("(a, b) => a + b");
-    console.log(f);
-    const y = await f(2, 3);
-    console.log(y);
+    // const sandbox = await SandboxMessenger.new("sandbox.html");
+    // globals({sandbox});
+    // console.log(sandbox);
+    // const f = await sandbox.compile("(a, b) => a + b");
+    // console.log(f);
+    // const y = await f(2, 3);
+    // console.log(y);
 };
+
+export const sandbox: Promise<SandboxMessenger> = SandboxMessenger.new("sandbox.html");

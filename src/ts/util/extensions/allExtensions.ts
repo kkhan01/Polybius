@@ -1,4 +1,4 @@
-import {Test} from "../functional/Test";
+import {truthy} from "./Truthy";
 
 const immutableDescriptor: PropertyDescriptor = Object.freeze({
     writable: false,
@@ -242,6 +242,27 @@ Object.defineImmutableProperties(Array.prototype, {
         this.forEach(f => f(u));
     },
     
+    mapFilter<T, U>(this: T[], map: (value: T, index: number, array: T[]) => OrFalsy<U>): U[] {
+        return this.map(map).filter(truthy);
+    },
+    
+    asyncMap<T, U>(this: T[], map: (value: T, index: number, array: T[]) => Promise<U>): Promise<U[]> {
+        return Promise.all(this.map(map));
+    },
+    
+    async asyncFilter<T>(this: T[],
+                         filter: (value: T, index: number, array: T[]) => Promise<boolean>
+    ): Promise<T[]> {
+        return (await Promise.all(
+                this.map(async (value, index, array) => ({value, filtered: await filter(value, index, array)})))
+        ).filter(e => e.filtered).map(e => e.value);
+    },
+    
+    async asyncMapFilter<T, U>(this: T[],
+                               map: (value: T, index: number, array: T[]) => Promise<OrFalsy<U>>): Promise<U[]> {
+        return (await Promise.all(this.map(map))).filter(truthy);
+    },
+    
 });
 
 Object.definePolyfillProperties(Array.prototype, {
@@ -301,18 +322,13 @@ Object.defineImmutableProperties(Number, {
     
 });
 
-Object.defineImmutableProperties(RegExp.prototype, {
+// don't touch RegExp.prototype,
+// since modifying it will bail out of RegExp's fast paths.
+
+Object.defineImmutableProperties(RegExp, {
     
-    boundTest(this: RegExp): (s: string) => boolean {
-        return s => this.test(s);
-    },
-    
-    boundExec(this: RegExp): (s: string) => RegExpExecArray | null {
-        return s => this.exec(s);
-    },
-    
-    toSource(this: RegExp): string {
-        const {source, flags} = this;
+    toSource(regExp: RegExp): string {
+        const {source, flags} = regExp;
         return `/${source}/${flags}`;
     },
     

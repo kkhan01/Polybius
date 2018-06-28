@@ -5,7 +5,7 @@ const Storages_1 = require("./Storages");
 exports.identitySerializer = function () {
     return {
         serialize: t => t,
-        deserialize: u => u,
+        deserialize: async (u) => u,
     };
 };
 const makeTier = function (base, serializer) {
@@ -50,7 +50,7 @@ const addArrayMap = function (base) {
         set,
         refresher,
         map: ({ serialize, deserialize }) => addArrayMap({
-            get: async () => (await get()).map(deserialize),
+            get: async () => (await get()).asyncMap(deserialize),
             set: async (a) => await set(a.map(serialize)),
             refresher,
         }),
@@ -90,7 +90,7 @@ exports.StorageItem = {
             defaultValue: [],
             converter: {
                 serialize: a => a.map(serialize),
-                deserialize: a => a.map(deserialize),
+                deserialize: a => a.asyncMap(deserialize),
             },
             serializer,
         })).freeze();

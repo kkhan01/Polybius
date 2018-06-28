@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Truthy_1 = require("./Truthy");
 const immutableDescriptor = Object.freeze({
     writable: false,
     enumerable: false,
@@ -190,6 +191,18 @@ Object.defineImmutableProperties(Array.prototype, {
     callEach(u) {
         this.forEach(f => f(u));
     },
+    mapFilter(map) {
+        return this.map(map).filter(Truthy_1.truthy);
+    },
+    asyncMap(map) {
+        return Promise.all(this.map(map));
+    },
+    async asyncFilter(filter) {
+        return (await Promise.all(this.map(async (value, index, array) => ({ value, filtered: await filter(value, index, array) })))).filter(e => e.filtered).map(e => e.value);
+    },
+    async asyncMapFilter(map) {
+        return (await Promise.all(this.map(map))).filter(Truthy_1.truthy);
+    },
 });
 Object.definePolyfillProperties(Array.prototype, {
     flatMap(flatMap, thisArg) {
@@ -228,15 +241,11 @@ Object.defineImmutableProperties(Number, {
         return Math.round(n) + "px";
     },
 });
-Object.defineImmutableProperties(RegExp.prototype, {
-    boundTest() {
-        return s => this.test(s);
-    },
-    boundExec() {
-        return s => this.exec(s);
-    },
-    toSource() {
-        const { source, flags } = this;
+// don't touch RegExp.prototype,
+// since modifying it will bail out of RegExp's fast paths.
+Object.defineImmutableProperties(RegExp, {
+    toSource(regExp) {
+        const { source, flags } = regExp;
         return `/${source}/${flags}`;
     },
 });

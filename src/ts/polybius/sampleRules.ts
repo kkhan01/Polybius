@@ -1,29 +1,36 @@
-import {Path} from "../util/Path";
+import {Route} from "./Route";
 import {Router} from "./Router";
 import {storage} from "./Storage";
+import {Test} from "./Test";
 
 export const addSampleRules = function(): void {
-    // noinspection JSIgnoredPromiseFromCall
-    storage.routers.set([
-        Router.urlHref.create({
-            enabled: true,
-            test: /^.*google.*$/i.toSource(),
-            route: Path.of("google"),
-        }),
-        Router.filename.create({
-            enabled: true,
-            test: "logo",
-            route: Path.of("logos"),
-        }),
-        Router.extension.create({
-            enabled: true,
-            test: "png",
-            route: Path.of("png"),
-        }),
-        Router.extension.create({
-            enabled: true,
-            test: "pdf",
-            route: Path.of("pdf"),
-        }),
-    ]);
+    (async () => {
+        await storage.routers.set(await Promise.all([
+            Router.urlHref({
+                enabled: true,
+                test: Test.regex({input: RegExp.toSource(/^.*google.*$/i)}),
+                route: Route.path({input: "google"}),
+            }),
+            Router.filename({
+                enabled: true,
+                test: Test.string({input: "logo"}),
+                route: Route.path({input: "logos"}),
+            }),
+            Router.extension({
+                enabled: true,
+                test: Test.string({input: "png"}),
+                route: Route.path({input: "png"}),
+            }),
+            Router.extension({
+                enabled: true,
+                test: Test.string({input: "pdf"}),
+                route: Route.path({input: "pdf"}),
+            }),
+            Router.extension({
+                enabled: true,
+                test: Test.string({input: "js"}),
+                route: Route.path({input: "js"}),
+            }),
+        ]));
+    })();
 };

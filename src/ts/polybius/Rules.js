@@ -17,23 +17,23 @@ class RouterTypesDropdown extends react_1.Component {
         return React.createElement("select", { style: { display: "block" }, defaultValue: this.props.current }, Router_1.Routers.map(({ type, displayName }) => React.createElement("option", { key: type, value: type }, displayName)));
     }
 }
-const Rule = ({ rule: { enabled, test, route, type } }) => {
+const Rule = ({ rule: { enabled, test: { input: testInput, type: testType }, route: { input: routeInput, conflictAction, type: routeType }, type: ruleType, } }) => {
+    const x = React.createElement("div", null,
+        React.createElement("div", null, ["Type", "Test", "Destination Directory", "Enabled"]
+            .map((header, i) => React.createElement("div", { key: i }, header))),
+        React.createElement("div", null,
+            React.createElement(RouterTypesDropdown, { current: ruleType })));
     return React.createElement("table", null,
-        React.createElement("thead", null,
-            React.createElement("tr", null,
-                React.createElement("th", null, "Type"),
-                React.createElement("th", null, "Test"),
-                React.createElement("th", null, "Destination Directory"),
-                React.createElement("th", null, "Enabled"))),
+        x,
         React.createElement("tbody", null,
             React.createElement("tr", null,
                 React.createElement("td", null,
-                    React.createElement(RouterTypesDropdown, { current: type })),
+                    React.createElement(RouterTypesDropdown, { current: testType })),
                 React.createElement("td", null,
-                    React.createElement("input", { defaultValue: test, id: "test", type: "text", className: "validate" }),
+                    React.createElement("input", { defaultValue: testInput, id: "test", type: "text", className: "validate" }),
                     React.createElement("label", { htmlFor: "test" })),
                 React.createElement("td", null,
-                    React.createElement("input", { defaultValue: route.toString(), id: "destdir", type: "text", className: "validate" }),
+                    React.createElement("input", { defaultValue: routeInput, id: "destdir", type: "text", className: "validate" }),
                     React.createElement("label", { htmlFor: "destdir" })),
                 React.createElement("td", null,
                     React.createElement("input", { defaultValue: enabled.toString(), id: "enabled", type: "text", className: "validate" }),
@@ -70,8 +70,10 @@ class Rules extends react_1.Component {
                 return Object.entries({
                     PNG: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png",
                     PDF: "http://www.pdf995.com/samples/pdf.pdf",
-                    Logo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
+                    OnlineLogo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
                     Google: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg",
+                    Polybius: "http://localhost:8000/Polybius/dist/Polybius.js",
+                    LocalLogo: "http://localhost:8000/Polybius/dist/logo.png",
                 }).map(([name, link], i) => React.createElement("div", { key: i },
                     i === 0 && br5,
                     React.createElement("a", { href: link, download: true, style: { fontSize: "larger", margin: 100 } }, name),

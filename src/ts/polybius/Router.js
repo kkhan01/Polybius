@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Path_1 = require("../util/Path");
 const utils_1 = require("../util/utils");
+const Route_1 = require("./Route");
+const Test_1 = require("./Test");
 exports.Router = (() => {
     const construct = (create) => {
         return {
@@ -9,33 +11,33 @@ exports.Router = (() => {
             map: (map) => {
                 return construct(({ enabled, test, route }) => create({ enabled, test: (t) => test(map(t)), route }));
             },
-            wrap: (type, map) => {
-                return {
-                    type,
-                    create: (options) => {
-                        const { enabled, test, route } = options;
-                        return {
-                            rule: {
-                                ...options,
-                                type: type,
-                            },
-                            ...create({
-                                enabled,
-                                test: map(test),
-                                route: download => ({
-                                    path: route.append(Path_1.Path.of(download.filename).fullFilename),
-                                    conflictAction: "uniquify",
-                                }),
-                            }),
-                        };
-                    },
-                    displayName: utils_1.separateFunctionName(type),
+            typed: (type) => {
+                const f = async (rule) => {
+                    const { enabled, test, route } = rule;
+                    const [_test, _route] = await Promise.all([test, route]);
+                    return {
+                        rule: {
+                            enabled,
+                            test: _test.rule,
+                            route: _route.rule,
+                            type,
+                        },
+                        ...create({
+                            enabled,
+                            test: _test.test,
+                            route: _route.route,
+                        }),
+                    };
                 };
+                return Object.assign(f, {
+                    type,
+                    displayName: utils_1.separateFunctionName(type),
+                });
             },
         };
     };
     const byDownload = construct(({ enabled, test, route }) => ({
-        test: (download) => enabled && test(download),
+        test: async (download) => enabled && test(download),
         route,
     }));
     const byPath = byDownload.map(download => download.filename).map(Path_1.Path.of);
@@ -43,48 +45,35 @@ exports.Router = (() => {
     const byExtension = byPath.map(path => path.extension);
     const byUrl = byDownload.map(download => new URL(download.url));
     const byUrlHref = byUrl.map(url => url.href);
-    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, -1)); // strip trailing :
+    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, -1)); // strip trailing ":"
     const byUrlHost = byUrl.map(url => url.host);
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
     const byReferrer = byDownload.map(download => download.referrer);
     const byMimeType = byDownload.map(download => download.mime);
     const byFileSize = byDownload.map(download => download.fileSize);
-    const stringTest = (input) => {
-        // test if regex
-        const regex = utils_1.parseRegExpLiteral(input);
-        if (regex) {
-            return regex.boundTest();
-        }
-        else {
-            return input.boundEquals();
-        }
-    };
-    const numberTest = (input) => {
-        const _n = parseInt(input);
-        return n => _n === n;
-    };
-    const parseFunction = (functionBody) => {
-        // TODO
-        return {};
-    };
-    const functionTest = (input) => parseFunction(input);
     return {
-        download: byDownload.wrap("download", functionTest),
-        path: byPath.wrap("path", functionTest),
-        filename: byFilename.wrap("filename", stringTest),
-        extension: byExtension.wrap("extension", stringTest),
-        url: byUrl.wrap("url", functionTest),
-        urlHref: byUrlHref.wrap("urlHref", stringTest),
-        urlProtocol: byUrlProtocol.wrap("urlProtocol", stringTest),
-        urlHost: byUrlHost.wrap("urlHost", stringTest),
-        urlPath: byUrlPath.wrap("urlPath", stringTest),
-        urlHash: byUrlHash.wrap("urlHash", stringTest),
-        referrer: byReferrer.wrap("referrer", stringTest),
-        mimeType: byMimeType.wrap("mimeType", stringTest),
-        fileSize: byFileSize.wrap("fileSize", numberTest),
+        download: byDownload.typed("download"),
+        path: byPath.typed("path"),
+        filename: byFilename.typed("filename"),
+        extension: byExtension.typed("extension"),
+        url: byUrl.typed("url"),
+        urlHref: byUrlHref.typed("urlHref"),
+        urlProtocol: byUrlProtocol.typed("urlProtocol"),
+        urlHost: byUrlHost.typed("urlHost"),
+        urlPath: byUrlPath.typed("urlPath"),
+        urlHash: byUrlHash.typed("urlHash"),
+        referrer: byReferrer.typed("referrer"),
+        mimeType: byMimeType.typed("mimeType"),
+        fileSize: byFileSize.typed("fileSize"),
     };
 })();
 exports.Routers = Object.values(exports.Router);
 exports.routerTypeNames = exports.Routers.map(({ displayName }) => displayName);
+exports.serializeRouter = (router) => router.rule;
+exports.deserializeRouter = ({ type, test, route, enabled }) => exports.Router[type]({
+    test: Test_1.deserializeTest(test),
+    route: Route_1.deserializeRoute(route),
+    enabled,
+});
 //# sourceMappingURL=Router.js.map

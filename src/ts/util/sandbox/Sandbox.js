@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const allExtensions_1 = require("../extensions/allExtensions");
 allExtensions_1.addExtensions();
+// a shared global object accessible by all sandboxed functions
+// this allows them to share code
+const sandboxGlobal = Object.create(null);
 let nextFunctionId = 0;
 const functions = new Map();
 const onMessage = function (event) {
@@ -32,8 +35,8 @@ const onMessage = function (event) {
     };
     const responders = {
         evaluate(js) {
-            const wrappedFunc = new Function(`"use strict"; return (${js})`);
-            return wrappedFunc();
+            const wrappedFunc = new Function("global", `"use strict"; return (${js})`);
+            return wrappedFunc(sandboxGlobal);
         },
         compile(js) {
             const func = responders.evaluate(js);

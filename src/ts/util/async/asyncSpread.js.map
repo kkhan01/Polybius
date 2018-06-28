@@ -1,0 +1,1 @@
+{"version":3,"file":"asyncSpread.js","sourceRoot":"","sources":["asyncSpread.ts"],"names":[],"mappings":";;AAAa,QAAA,WAAW,GAAG,KAAK,WAAa,QAA0B;IACnE,MAAM,CAAC,GAAQ,EAAE,CAAC;IAClB,IAAI,KAAK,EAAE,MAAM,CAAC,IAAI,QAAQ,EAAE;QAC5B,CAAC,CAAC,IAAI,CAAC,CAAC,CAAC,CAAC;KACb;IACD,OAAO,CAAC,CAAC;AACb,CAAC,CAAC"}

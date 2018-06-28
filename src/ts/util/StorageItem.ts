@@ -38,11 +38,11 @@ export interface StorageItems<T> extends RefreshableStorageItems<T> {
 
 export type StorageMap = {[key: string]: RefreshableStorageItem<any>};
 
-interface Serializer<T, U = string> {
+export interface Serializer<T, U = string> {
     
     readonly serialize: (t: T) => U;
     
-    readonly deserialize: (u: U) => T;
+    readonly deserialize: (u: U) => Promise<T>;
     
 }
 
@@ -116,7 +116,7 @@ interface StorageItemClass {
 export const identitySerializer = function <T, U>(): Serializer<T, U> {
     return {
         serialize: t => t as any as U,
-        deserialize: u => u as any as T,
+        deserialize: async u => u as any as T,
     };
 };
 
@@ -165,7 +165,7 @@ const addArrayMap = function <T>(base: RefreshableStorageItems<T>): StorageItems
         set,
         refresher,
         map: ({serialize, deserialize}) => addArrayMap({
-            get: async () => (await get()).map(deserialize),
+            get: async () => (await get()).asyncMap(deserialize),
             set: async a => await set(a.map(serialize)),
             refresher,
         }),
@@ -223,7 +223,7 @@ export const StorageItem: StorageItemClass = {
             defaultValue: [],
             converter: {
                 serialize: a => a.map(serialize),
-                deserialize: a => a.map(deserialize),
+                deserialize: a => a.asyncMap(deserialize),
             },
             serializer,
         })).freeze();

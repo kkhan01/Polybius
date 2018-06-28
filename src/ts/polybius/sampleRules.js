@@ -1,31 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Path_1 = require("../util/Path");
+const Route_1 = require("./Route");
 const Router_1 = require("./Router");
 const Storage_1 = require("./Storage");
+const Test_1 = require("./Test");
 exports.addSampleRules = function () {
-    // noinspection JSIgnoredPromiseFromCall
-    Storage_1.storage.routers.set([
-        Router_1.Router.urlHref.create({
-            enabled: true,
-            test: /^.*google.*$/i.toSource(),
-            route: Path_1.Path.of("google"),
-        }),
-        Router_1.Router.filename.create({
-            enabled: true,
-            test: "logo",
-            route: Path_1.Path.of("logos"),
-        }),
-        Router_1.Router.extension.create({
-            enabled: true,
-            test: "png",
-            route: Path_1.Path.of("png"),
-        }),
-        Router_1.Router.extension.create({
-            enabled: true,
-            test: "pdf",
-            route: Path_1.Path.of("pdf"),
-        }),
-    ]);
+    (async () => {
+        await Storage_1.storage.routers.set(await Promise.all([
+            Router_1.Router.urlHref({
+                enabled: true,
+                test: Test_1.Test.regex({ input: RegExp.toSource(/^.*google.*$/i) }),
+                route: Route_1.Route.path({ input: "google" }),
+            }),
+            Router_1.Router.filename({
+                enabled: true,
+                test: Test_1.Test.string({ input: "logo" }),
+                route: Route_1.Route.path({ input: "logos" }),
+            }),
+            Router_1.Router.extension({
+                enabled: true,
+                test: Test_1.Test.string({ input: "png" }),
+                route: Route_1.Route.path({ input: "png" }),
+            }),
+            Router_1.Router.extension({
+                enabled: true,
+                test: Test_1.Test.string({ input: "pdf" }),
+                route: Route_1.Route.path({ input: "pdf" }),
+            }),
+            Router_1.Router.extension({
+                enabled: true,
+                test: Test_1.Test.string({ input: "js" }),
+                route: Route_1.Route.path({ input: "js" }),
+            }),
+        ]));
+    })();
 };
 //# sourceMappingURL=sampleRules.js.map

@@ -1,15 +1,17 @@
-import {Test} from "../util/functional/Test";
+import {AsyncTest} from "../util/functional/Test";
 import {Path} from "../util/Path";
-import {parseRegExpLiteral, separateFunctionName} from "../util/utils";
-import {DownloadRoute} from "./DownloadRoute";
+import {separateFunctionName} from "../util/utils";
+import {deserializeRoute, RouteFunc} from "./Route";
 import {RouterRule, UnTypedRouterRule} from "./RouterRule";
+import {deserializeTest} from "./Test";
 import DownloadItem = chrome.downloads.DownloadItem;
 
 interface RuleLessRouter {
     
-    readonly test: Test<DownloadItem>;
+    readonly test: AsyncTest<DownloadItem>;
     
-    readonly route: DownloadRoute;
+    readonly route: RouteFunc;
+    
 }
 
 export interface Router extends RuleLessRouter {
@@ -22,27 +24,31 @@ interface TestRouterRule<T> {
     
     readonly enabled: boolean;
     
-    readonly test: Test<T>;
+    readonly test: AsyncTest<T>;
     
-    readonly route: DownloadRoute;
-    
-}
-
-interface TestDownloadRouterConstructor<T = string> {
-    
-    create: (options: TestRouterRule<T>) => RuleLessRouter;
-    
-    map<U>(map: (t: T) => U): TestDownloadRouterConstructor<U>;
-    
-    wrap(type: RouterType, map: (input: string) => Test<T>): RouterConstructor;
+    readonly route: RouteFunc;
     
 }
 
-interface RouterConstructor {
+interface TestRouterConstructor<T = string> {
+    
+    create: (rule: TestRouterRule<T>) => RuleLessRouter;
+    
+    map<U>(map: (t: T) => U): TestRouterConstructor<U>;
+    
+    typed(type: RouterType): RouterConstructor;
+    
+}
+
+interface RouterFunc {
+    
+    (rule: UnTypedRouterRule): Promise<Router>;
+    
+}
+
+interface RouterConstructor extends RouterFunc {
     
     type: RouterType;
-    
-    create: (options: UnTypedRouterRule) => Router;
     
     displayName: string;
     
@@ -75,50 +81,46 @@ export type RouterType = keyof RouterConstructors;
 
 export const Router: RouterConstructors = ((): RouterConstructors => {
     
-    const construct = <T>(create: (options: TestRouterRule<T>) => RuleLessRouter): TestDownloadRouterConstructor<T> => {
+    const construct = <T>(create: (rule: TestRouterRule<T>) => RuleLessRouter): TestRouterConstructor<T> => {
         return {
             
             create,
             
-            map: <U>(map: (t: T) => U): TestDownloadRouterConstructor<U> => {
+            map: <U>(map: (t: T) => U): TestRouterConstructor<U> => {
                 return construct(({enabled, test, route}: TestRouterRule<U>) =>
                     create({enabled, test: (t: T) => test(map(t)), route}));
             },
             
-            wrap: (type: RouterType, map: (input: string) => Test<T>): RouterConstructor => {
-                return {
-                    
-                    type,
-                    
-                    create: (options): Router => {
-                        const {enabled, test, route} = options;
-                        return {
-                            rule: {
-                                ...options,
-                                type: type,
-                            },
-                            ...create({
-                                enabled,
-                                test: map(test),
-                                route: download => ({
-                                    path: route.append(Path.of(download.filename).fullFilename),
-                                    conflictAction: "uniquify",
-                                }),
-                            }),
-                        };
-                    },
-                    
-                    displayName: separateFunctionName(type as string),
-                    
+            typed: (type: RouterType): RouterConstructor => {
+                const f: RouterFunc = async rule => {
+                    const {enabled, test, route} = rule;
+                    const [_test, _route] = await Promise.all([test, route]);
+                    return {
+                        rule: {
+                            enabled,
+                            test: _test.rule,
+                            route: _route.rule,
+                            type,
+                        },
+                        ...create({
+                            enabled,
+                            test: _test.test,
+                            route: _route.route,
+                        }),
+                    };
                 };
+                return Object.assign(f, {
+                    type,
+                    displayName: separateFunctionName(type as string),
+                });
             },
             
         };
     };
     
-    const byDownload: TestDownloadRouterConstructor<DownloadItem> = construct(
+    const byDownload: TestRouterConstructor<DownloadItem> = construct(
         ({enabled, test, route}: TestRouterRule<DownloadItem>) => ({
-            test: (download: DownloadItem) => enabled && test(download),
+            test: async (download: DownloadItem) => enabled && test(download),
             route,
         })
     );
@@ -129,7 +131,7 @@ export const Router: RouterConstructors = ((): RouterConstructors => {
     
     const byUrl = byDownload.map(download => new URL(download.url));
     const byUrlHref = byUrl.map(url => url.href);
-    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, -1)); // strip trailing :
+    const byUrlProtocol = byUrl.map(url => url.protocol.slice(0, -1)); // strip trailing ":"
     const byUrlHost = byUrl.map(url => url.host);
     const byUrlPath = byUrl.map(url => url.pathname);
     const byUrlHash = byUrl.map(url => url.hash.slice(1));
@@ -138,46 +140,24 @@ export const Router: RouterConstructors = ((): RouterConstructors => {
     const byMimeType = byDownload.map(download => download.mime);
     const byFileSize = byDownload.map(download => download.fileSize);
     
-    const stringTest = (input: string): Test<string> => {
-        // test if regex
-        const regex = parseRegExpLiteral(input);
-        if (regex) {
-            return regex.boundTest();
-        } else {
-            return input.boundEquals();
-        }
-    };
-    
-    const numberTest = (input: string): Test<number> => {
-        const _n: number = parseInt(input);
-        return n => _n === n;
-    };
-    
-    const parseFunction = <T>(functionBody: string): Test<T> => {
-        // TODO
-        return {} as any as Test<T>;
-    };
-    
-    const functionTest = <T>(input: string) => parseFunction(input);
-    
     return {
         
-        download: byDownload.wrap("download", functionTest),
+        download: byDownload.typed("download"),
         
-        path: byPath.wrap("path", functionTest),
-        filename: byFilename.wrap("filename", stringTest),
-        extension: byExtension.wrap("extension", stringTest),
+        path: byPath.typed("path"),
+        filename: byFilename.typed("filename"),
+        extension: byExtension.typed("extension"),
         
-        url: byUrl.wrap("url", functionTest),
-        urlHref: byUrlHref.wrap("urlHref", stringTest),
-        urlProtocol: byUrlProtocol.wrap("urlProtocol", stringTest),
-        urlHost: byUrlHost.wrap("urlHost", stringTest),
-        urlPath: byUrlPath.wrap("urlPath", stringTest),
-        urlHash: byUrlHash.wrap("urlHash", stringTest),
+        url: byUrl.typed("url"),
+        urlHref: byUrlHref.typed("urlHref"),
+        urlProtocol: byUrlProtocol.typed("urlProtocol"),
+        urlHost: byUrlHost.typed("urlHost"),
+        urlPath: byUrlPath.typed("urlPath"),
+        urlHash: byUrlHash.typed("urlHash"),
         
-        referrer: byReferrer.wrap("referrer", stringTest),
-        mimeType: byMimeType.wrap("mimeType", stringTest),
-        fileSize: byFileSize.wrap("fileSize", numberTest),
+        referrer: byReferrer.typed("referrer"),
+        mimeType: byMimeType.typed("mimeType"),
+        fileSize: byFileSize.typed("fileSize"),
         
     };
     
@@ -186,3 +166,11 @@ export const Router: RouterConstructors = ((): RouterConstructors => {
 export const Routers: RouterConstructor[] = Object.values(Router);
 
 export const routerTypeNames: string[] = Routers.map(({displayName}) => displayName);
+
+export const serializeRouter = (router: Router) => router.rule;
+
+export const deserializeRouter = ({type, test, route, enabled}: RouterRule) => Router[type]({
+    test: deserializeTest(test),
+    route: deserializeRoute(route),
+    enabled,
+});

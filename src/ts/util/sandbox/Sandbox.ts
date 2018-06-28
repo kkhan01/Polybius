@@ -1,7 +1,11 @@
 import {addExtensions} from "../extensions/allExtensions";
-import {InvokeArgs, RawSandbox, RawSandboxedFunction, Result, TypedMessage} from "./SandboxMessenger";
+import {InvokeArgs, RawSandbox, RawSandboxedFunction, Result, sandbox, TypedMessage} from "./SandboxMessenger";
 
 addExtensions();
+
+// a shared global object accessible by all sandboxed functions
+// this allows them to share code
+const sandboxGlobal: Object = Object.create(null);
 
 let nextFunctionId: number = 0;
 const functions: Map<number, Function> = new Map();
@@ -43,8 +47,8 @@ const onMessage = function(event: MessageEvent): void {
     const responders: RawSandbox = {
         
         evaluate(js: string): any {
-            const wrappedFunc: Function = new Function(`"use strict"; return (${js})`);
-            return wrappedFunc();
+            const wrappedFunc: Function = new Function("global", `"use strict"; return (${js})`);
+            return wrappedFunc(sandboxGlobal);
         },
         
         compile(js: string): number {

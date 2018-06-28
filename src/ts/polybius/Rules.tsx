@@ -1,8 +1,7 @@
 import * as React from "react";
 import {Component, ReactNode, SFC} from "react";
 import {render} from "react-dom";
-import * as ReactDOM from "react-dom";
-import {anyWindow, globals} from "../util/anyWindow";
+import {globals} from "../util/anyWindow";
 import {Repeat} from "../util/components/Repeat";
 import {Routers, RouterType} from "./Router";
 import {RouterRule} from "./RouterRule";
@@ -34,28 +33,42 @@ class RouterTypesDropdown extends Component<RouterTypesDropdownProps, {}> {
 }
 
 
-const Rule: SFC<{rule: RouterRule}> = ({rule: {enabled, test, route, type}}) => {
+const Rule: SFC<{rule: RouterRule}> = (
+    {
+        rule: {
+            enabled,
+            test: {input: testInput, type: testType},
+            route: {input: routeInput, conflictAction, type: routeType},
+            type: ruleType,
+        }
+    }
+) => {
+    const x = <div>
+        <div>
+            {["Type", "Test", "Destination Directory", "Enabled"]
+                .map((header, i) => <div key={i}>{header}</div>)
+            }
+        </div>
+        <div>
+            <RouterTypesDropdown current={ruleType}/>
+        
+        </div>
+    </div>;
+    
     return <table>
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Test</th>
-                <th>Destination Directory</th>
-                <th>Enabled</th>
-            </tr>
-        </thead>
+        {x}
         
         <tbody>
             <tr>
                 <td>
-                    <RouterTypesDropdown current={type}/>
+                    <RouterTypesDropdown current={testType}/>
                 </td>
                 <td>
-                    <input defaultValue={test} id="test" type="text" className="validate"/>
+                    <input defaultValue={testInput} id="test" type="text" className="validate"/>
                     <label htmlFor="test"/>
                 </td>
                 <td>
-                    <input defaultValue={route.toString()} id="destdir" type="text" className="validate"/>
+                    <input defaultValue={routeInput} id="destdir" type="text" className="validate"/>
                     <label htmlFor="destdir"/>
                 </td>
                 <td>
@@ -113,8 +126,10 @@ class Rules extends Component<{}, RulesState> {
                 return Object.entries({
                     PNG: "http://www.freepngimg.com/download/facebook/1-2-facebook-download-png.png",
                     PDF: "http://www.pdf995.com/samples/pdf.pdf",
-                    Logo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
+                    OnlineLogo: "https://raw.githubusercontent.com/kkysen/Polybius/master/dist/logo.png",
                     Google: "https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_share.jpg",
+                    Polybius: "http://localhost:8000/Polybius/dist/Polybius.js",
+                    LocalLogo: "http://localhost:8000/Polybius/dist/logo.png",
                 }).map(([name, link], i) =>
                     <div key={i}>
                         {i === 0 && br5}

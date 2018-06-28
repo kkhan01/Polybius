@@ -1,7 +1,7 @@
 import * as React from "react";
 import {ReactNode, SFC} from "react";
 import * as ReactDOM from "react-dom";
-import {DownloadAction} from "./DownloadRoute";
+import {DownloadAction} from "./Route";
 
 let selectedAction: DownloadAction | null = null;
 

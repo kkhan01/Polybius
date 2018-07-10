@@ -38,6 +38,7 @@
     "ts-loader": "^4.3.0",
     "typescript": "^2.8.3",
     "uglifyjs-webpack-plugin": "^1.2.7",
+    "uglify-es": "^3.3.9",
     "webpack": "^4.11.1",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^2.1.3"

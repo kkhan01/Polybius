@@ -1,7 +1,7 @@
 # Polybius
 ## by Smatter BABY
 ### Khyber Sen, Ishtiaque Mahdi, and Khinshan Khan
-T Chrome extension for download routing
+A Chrome extension for download routing
 
 ## Instructions for running extension locally until it's live on the chromestore:
 1. git clone (https://github.com/kkysen/Polybius.git)[https://github.com/kkysen/Polybius.git]

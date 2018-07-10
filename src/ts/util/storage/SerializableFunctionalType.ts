@@ -1,12 +1,12 @@
 // import {Serializer} from "./StorageItem";
 //
-// typed AsyncConstructor<Rule, E> = (rule: Rule) => Promise<E>;
-// typed Fields<E> = {[key: string]: E};
-// typed ConstructorMap<Rule, E> = Fields<AsyncConstructor<Rule, E>>;
+// typed AsyncConstructor<Rule, T> = (rule: Rule) => Promise<T>;
+// typed Fields<T> = {[key: string]: T};
+// typed ConstructorMap<Rule, T> = Fields<AsyncConstructor<Rule, T>>;
 // typed Type<Constructors> = keyof Constructors;
 // typed Rule<UnTypedRule, Type> = UnTypedRule & {readonly typed: Type};
-// typed Return<E, UnTypedRule, Constructors> = {
-//     readonly serializer: Serializer<E, Rule<UnTypedRule, Type<Constructors>>>;
+// typed Return<T, UnTypedRule, Constructors> = {
+//     readonly serializer: Serializer<T, Rule<UnTypedRule, Type<Constructors>>>;
 // }
 // typed Ruled<RuleLess, Rule> = RuleLess & {readonly rule: Rule};
 //

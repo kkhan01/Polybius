@@ -1,14 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isString = function (o) {
-    return Object.prototype.toString.call(o) === "[object String]";
-};
-exports.isDataView = function (o) {
-    return o.constructor === DataView;
-};
-exports.isArrayBuffer = function (o) {
-    return o.constructor === ArrayBuffer;
-};
 exports.capitalize = function (word) {
     return word.length === 0
         ? ""
@@ -85,4 +76,7 @@ exports.parseRegExpLiteral = function (regex) {
 exports.escapeRegExp = function (literal, flags) {
     return new RegExp(literal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), flags);
 };
+class NotImplementedError extends Error {
+}
+exports.NotImplementedError = NotImplementedError;
 //# sourceMappingURL=utils.js.map

@@ -93,7 +93,7 @@ export const Router: RouterConstructors = ((): RouterConstructors => {
             
             typed: (type: RouterType): RouterConstructor => {
                 const f: RouterFunc = async rule => {
-                    const {enabled, test, route} = rule;
+                    const {enabled = true, test, route} = rule;
                     const [_test, _route] = await Promise.all([test, route]);
                     return {
                         rule: {

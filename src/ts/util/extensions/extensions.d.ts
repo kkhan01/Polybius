@@ -2,7 +2,15 @@ declare type OrFalsy<T> = T | false | 0 | null | undefined | "";
 
 declare type Truthy<T> = T extends false | 0 | null | undefined | "" ? never : T;
 
+declare type StringKeyOf<T> = Extract<keyof T, string>;
+
 declare interface ObjectConstructor {
+    
+    keys<T, K extends StringKeyOf<T>>(t: T): K[];
+    
+    values<T, K extends StringKeyOf<T>>(t: T): T[K][];
+    
+    entries<T, K extends StringKeyOf<T>>(t: T): [K, T[K]][];
     
     defineSharedProperties(object: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object, overwrite?: boolean): void;
     
@@ -74,13 +82,15 @@ declare interface Function {
 
 declare interface Array<T> {
     
+    size(): number;
+    
     last(): T;
     
     clear(): void;
     
     removeAt(index: number): T;
     
-    remove(value: T): T | undefined;
+    remove(value: T, equals?: (e1: T, e2: T) => boolean): T | undefined;
     
     add(index: number, value: T): void;
     
@@ -103,6 +113,8 @@ declare interface Array<T> {
     mapCall<U, T extends () => U>(this: T[]): U[];
     
     callEach<T extends (u: U) => void, U = undefined>(this: T[], u: U): void;
+    
+    asyncForEach(func: (value: T, index: number, array: T[]) => Promise<void>): Promise<void>;
     
     mapFilter<U>(map: (value: T, index: number, array: T[]) => OrFalsy<U>): U[];
     

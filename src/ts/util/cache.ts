@@ -4,3 +4,7 @@ export const cache = function<T>(getter: () => T): () => T {
         return cache || (cache = getter());
     };
 };
+
+export const getter = function<T>(t: T): () => T {
+    return () => t;
+};

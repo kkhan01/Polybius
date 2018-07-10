@@ -1,4 +1,5 @@
-import {truthy} from "./Truthy";
+import {Equals} from "../collections/HashEquals";
+import {truthy} from "../types/Truthy";
 
 const immutableDescriptor: PropertyDescriptor = Object.freeze({
     writable: false,
@@ -178,6 +179,10 @@ Object.defineImmutableProperties(Function.prototype, {
 
 Object.defineImmutableProperties(Array.prototype, {
     
+    size<T>(this: T[]) {
+        return this.length;
+    },
+    
     last<T>(this: T[]): T {
         return this[this.length - 1];
     },
@@ -190,8 +195,8 @@ Object.defineImmutableProperties(Array.prototype, {
         return this.splice(index, 1)[0];
     },
     
-    remove<T>(this: T[], value: T): T | undefined {
-        const i: number = this.indexOf(value);
+    remove<T>(this: T[], value: T, equals?: Equals<T>): T | undefined {
+        const i: number = !equals ? this.indexOf(value) : this.findIndex(Equals.bind(equals, value));
         if (i !== -1) {
             return this.removeAt(i);
         }
@@ -240,6 +245,10 @@ Object.defineImmutableProperties(Array.prototype, {
     
     callEach<T extends (u: U) => void, U = undefined>(this: T[], u: U): void {
         this.forEach(f => f(u));
+    },
+    
+    async asyncForEach<T>(this: T[], func: (value: T, index: number, array: T[]) => Promise<void>): Promise<void> {
+        await Promise.all(this.map(func));
     },
     
     mapFilter<T, U>(this: T[], map: (value: T, index: number, array: T[]) => OrFalsy<U>): U[] {

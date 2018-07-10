@@ -1,17 +1,5 @@
 import {ReactNode} from "react";
 
-export const isString = function(o: any): o is string {
-    return Object.prototype.toString.call(o) === "[object String]";
-};
-
-export const isDataView = function(o: any): o is DataView {
-    return o.constructor === DataView;
-};
-
-export const isArrayBuffer = function(o: any): o is ArrayBuffer {
-    return o.constructor === ArrayBuffer;
-};
-
 export const capitalize = function(word: string): string {
     return word.length === 0
         ? ""
@@ -103,3 +91,9 @@ export const escapeRegExp = function(literal: string, flags?: string): RegExp {
         flags,
     );
 };
+
+export class NotImplementedError extends Error {
+
+
+
+}

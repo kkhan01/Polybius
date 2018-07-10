@@ -4,7 +4,7 @@ import {Test, TestRule} from "./Test";
 
 
 export interface UnTypedRouterRule {
-    readonly enabled: boolean;
+    readonly enabled?: boolean;
     readonly test: Promise<Test<any>>;
     readonly route: Promise<Route>;
 }

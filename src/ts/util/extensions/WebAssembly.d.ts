@@ -51,7 +51,7 @@ declare namespace WebAssembly {
     
     /**
      * WebAssembly.Memory
-     * Note: A WebAssembly page has a constant size of 65,536 bytes, i.e., 64KiB.
+     * Note: T WebAssembly page has a constant size of 65,536 bytes, i.e., 64KiB.
      */
     interface MemoryDescriptor {
         initial: number;

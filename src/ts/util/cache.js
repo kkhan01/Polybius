@@ -6,4 +6,7 @@ exports.cache = function (getter) {
         return cache || (cache = getter());
     };
 };
+exports.getter = function (t) {
+    return () => t;
+};
 //# sourceMappingURL=cache.js.map

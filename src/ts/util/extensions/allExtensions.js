@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Truthy_1 = require("./Truthy");
+const HashEquals_1 = require("../collections/HashEquals");
+const Truthy_1 = require("../types/Truthy");
 const immutableDescriptor = Object.freeze({
     writable: false,
     enumerable: false,
@@ -139,6 +140,9 @@ Object.defineImmutableProperties(Function.prototype, {
     },
 });
 Object.defineImmutableProperties(Array.prototype, {
+    size() {
+        return this.length;
+    },
     last() {
         return this[this.length - 1];
     },
@@ -148,8 +152,8 @@ Object.defineImmutableProperties(Array.prototype, {
     removeAt(index) {
         return this.splice(index, 1)[0];
     },
-    remove(value) {
-        const i = this.indexOf(value);
+    remove(value, equals) {
+        const i = !equals ? this.indexOf(value) : this.findIndex(HashEquals_1.Equals.bind(equals, value));
         if (i !== -1) {
             return this.removeAt(i);
         }
@@ -190,6 +194,9 @@ Object.defineImmutableProperties(Array.prototype, {
     },
     callEach(u) {
         this.forEach(f => f(u));
+    },
+    async asyncForEach(func) {
+        await Promise.all(this.map(func));
     },
     mapFilter(map) {
         return this.map(map).filter(Truthy_1.truthy);

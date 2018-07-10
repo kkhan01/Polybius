@@ -1,5 +1,5 @@
 import {globals} from "../util/anyWindow";
-import {StorageItem, StorageItems, StorageMap} from "../util/StorageItem";
+import {StorageItem, StorageItems, StorageMap} from "../util/storage/StorageItem";
 import {deserializeRouter, Router, serializeRouter} from "./Router";
 import {RouterRule} from "./RouterRule";
 

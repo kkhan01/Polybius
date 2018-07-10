@@ -67,10 +67,10 @@ const Rule = function (data) {
     rules.appendChild(this.node);
     this.node.hidden = false;
     if (data) {
-        this.getElement("matcher").value = data.matcher;
-        this.getElement("match-param").value = data.match_param;
-        this.getElement("action").value = data.action;
-        this.getElement("action-js").value = data.action_js;
+        this.getElement("matcher").getter = data.matcher;
+        this.getElement("match-param").getter = data.match_param;
+        this.getElement("action").getter = data.action;
+        this.getElement("action-js").getter = data.action_js;
         this.getElement("enabled").checked = data.enabled;
     }
     this.getElement("download-label").htmlFor = this.getElement("enabled").id =
